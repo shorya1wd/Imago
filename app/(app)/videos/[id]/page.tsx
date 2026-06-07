@@ -14,6 +14,8 @@ import Link from 'next/link'
 import { useAuth } from '@clerk/nextjs' 
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import 'next-cloudinary/dist/cld-video-player.css';
+import { CldVideoPlayer } from 'next-cloudinary';
 
 dayjs.extend(relativeTime)
 
@@ -93,14 +95,20 @@ export default function VideoPage() {
       </Link>
 
       {/* Video Player Section */}
-      <div className="w-full bg-black rounded-2xl overflow-hidden shadow-2xl aspect-video flex items-center justify-center mb-8">
-        <video 
-          src={getFullVideoUrl(video.publicId)}
-          controls
-          autoPlay
-          className="w-full h-full object-contain"
-        />
-      </div>
+      {/* Video Player Section */}
+<div className="w-full bg-black rounded-2xl overflow-hidden shadow-2xl aspect-video flex items-center justify-center mb-8">
+  <CldVideoPlayer
+    width="1920"
+    height="1080"
+    src={video.publicId}
+    transformation={{
+      quality: "auto",
+      format: "mp4" // Match the eager transformation we set up earlier!
+    }}
+    className="w-full h-full object-contain"
+    autoPlay="always"
+  />
+</div>
 
       {/* Details Section */}
       <div className="flex flex-col md:flex-row justify-between gap-8">

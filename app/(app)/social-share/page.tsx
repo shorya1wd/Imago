@@ -469,7 +469,7 @@ if (!isMounted) {
       src={uploadedImage}
       width={socialFormats[selectedFormat].width}
       height={socialFormats[selectedFormat].height}
-      crop="pad"
+      crop="fill"
       gravity="auto"
       format={isRemoveBg && !isRestored ? "png" : "auto"}
       
@@ -487,7 +487,7 @@ if (!isMounted) {
       oilPaint={filter === "oilPaint" ? "40" : undefined}
       vignette={filter === "vignette" ? "50" : undefined}
       
-      background={isRemoveBg ? (debouncedBgColor ? debouncedBgColor.replace("#", "rgb:") : undefined) : "auto"}
+      background={isRemoveBg && debouncedBgColor ? debouncedBgColor.replace("#", "rgb:") : undefined}
       
       // ◄ REMOVED: No more broken Cloudinary overlays!
 

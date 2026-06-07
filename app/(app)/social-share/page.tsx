@@ -470,7 +470,7 @@ if (!isMounted) {
       width={socialFormats[selectedFormat].width}
       height={socialFormats[selectedFormat].height}
       crop="fill"
-      gravity="auto"
+      gravity="center"
       format={isRemoveBg && !isRestored ? "png" : "auto"}
       
       improve={isEnhanced ? true : undefined}

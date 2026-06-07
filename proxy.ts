@@ -1,4 +1,4 @@
-import { clerkMiddleware ,createRouteMatcher} from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher([
@@ -14,42 +14,37 @@ const isPublicRoute = createRouteMatcher([
 
 const isPublicApiRoute = createRouteMatcher([
   '/api/videos(.*)',
-  '/videos(.*)',
   '/api/image-upload',
   '/api/images/public'
 ]); 
 
-export default clerkMiddleware((auth,req)=>{
-  const {userId}=auth
-  const currentUrl=new URL(req.url)
-  const isHomePage=currentUrl.pathname==='/home'  
-  const isApiRequest=currentUrl.pathname.startsWith('/api')
+export default clerkMiddleware(async (auth, req) => {
+  // Fetch auth state once
+  const authObject = await auth();
+  const { userId } = authObject;
+  
+  const currentUrl = new URL(req.url);
 
-  if (!isPublicRoute(req)) {
-    const authObject = await auth();
-    if (!authObject.userId) {
-      return authObject.redirectToSignIn();
-    }
-  }
-
+  // 1. Redirect root to home
   if (currentUrl.pathname === '/') {
     return NextResponse.redirect(new URL('/home', req.url));
   }
 
-  if (userId && (currentUrl.pathname === '/sign-in' || currentUrl.pathname === '/sign-up' || currentUrl.pathname === '/')) {
+  // 2. Redirect logged-in users away from auth pages
+  if (userId && (currentUrl.pathname === '/sign-in' || currentUrl.pathname === '/sign-up')) {
     return NextResponse.redirect(new URL('/home', req.url));
   }
 
-  // Protect private routes for logged-out users
-  if (!userId) {
-    if (!isPublicRoute(req) && !isPublicApiRoute(req)) {
-      return NextResponse.redirect(new URL('/sign-in', req.url));
-    }
-    if (isApiRequest && !isPublicApiRoute(req)) {
-      return NextResponse.redirect(new URL('/sign-in', req.url));
+  // 3. Protect private routes
+  // If the route is NOT a public page AND NOT a public API route, force login.
+  if (!isPublicRoute(req) && !isPublicApiRoute(req)) {
+    if (!userId) {
+      return authObject.redirectToSignIn();
     }
   }
-  return NextResponse.next()
+
+  // 4. Allow request to proceed
+  return NextResponse.next();
 });
 
 export const config = {

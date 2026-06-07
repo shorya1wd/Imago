@@ -357,7 +357,7 @@ if (!isMounted) {
 
                 <div className="flex items-center justify-between">
                   <span className="label-text">Add &quot;Imago&quot; Overlay</span>
-                  <input type="checkbox" className="toggle toggle-primary" checked={hasOverlay} onChange={(e) => handleEffectChange(setHasOverlay, e.target.checked)} />
+                  <input type="checkbox" className="toggle toggle-primary" checked={hasOverlay} onChange={(e) => setHasOverlay(e.target.checked)} />
                 </div>
 
                 <div className="divider my-2"></div>

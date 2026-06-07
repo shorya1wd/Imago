@@ -5,6 +5,7 @@ import Image from "next/image"
 import axios from "axios";
 import { useUser, SignInButton } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { HexColorPicker } from "react-colorful";
 
 const socialFormats= {
   "Instagram-Square(1:1)": {
@@ -75,6 +76,7 @@ function SocialShare() {
   const [isUploading,setIsUploading]=useState<boolean>(false)
   const [isTransforming,setIsTransforming]=useState<boolean>(false)
   const imageRef = useRef<HTMLImageElement>(null)
+  const [showPicker, setShowPicker] = useState(false);
 
   const [isEnhanced, setIsEnhanced] = useState(false);
   const [isRemoveBg, setIsRemoveBg] = useState(false);
@@ -406,32 +408,54 @@ if (!isMounted) {
                 {/* Background Color (Disabled if Restore is active) */}
                 {/* Background Color (Disabled if Restore is active) */}
                 {isRemoveBg && (
-                <div>
-                  <span className="label-text block mb-2 text-sm font-semibold text-base-content">Background Color</span>
-                  <div className="flex items-center gap-3">
-                    <input 
-                      type="color" 
-                      className="w-12 h-12 p-1 bg-base-200 border border-base-300 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-                      value={bgColor || "#ffffff"}
-                      disabled={isRestored} 
-                      onChange={(e) => setBgColor(e.target.value)}
-                    />
-                    <div className="flex flex-col">
-                      <span className="text-sm font-mono text-base-content/80 uppercase">
-                        {bgColor || "Transparent"}
-                      </span>
-                      <span className="text-xs text-base-content/50">
-                        Click to pick color
-                      </span>
-                    </div>
-                  </div>
-                  {isRestored && (
-                  <p className="text-xs text-error mt-2 font-medium">
-                  *AI Restore active. Background color disabled.
-                  </p>
-                  )}
-                </div>
-                )}
+  <div>
+    <span className="label-text block mb-2 text-sm font-semibold text-base-content">Background Color</span>
+    <div className="flex items-center gap-3">
+      
+      {/* ◄ NEW CUSTOM COLOR PICKER ► */}
+      <div className="relative">
+        <button
+          type="button"
+          className="w-12 h-12 border border-base-300 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 transition-transform active:scale-95"
+          style={{ backgroundColor: bgColor || "#ffffff" }}
+          disabled={isRestored}
+          onClick={() => setShowPicker(!showPicker)}
+        />
+        {showPicker && !isRestored && (
+          <div className="absolute top-14 left-0 z-50 p-3 bg-base-200 rounded-xl shadow-2xl border border-base-300 w-[220px]">
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-sm font-bold text-base-content">Pick Color</span>
+              <button 
+                type="button"
+                onClick={() => setShowPicker(false)} 
+                className="btn btn-circle btn-ghost btn-xs"
+              >
+                ✕
+              </button>
+            </div>
+            <HexColorPicker color={bgColor || "#ffffff"} onChange={setBgColor} />
+          </div>
+        )}
+      </div>
+      {/* ◄ END CUSTOM COLOR PICKER ► */}
+
+      <div className="flex flex-col">
+        <span className="text-sm font-mono text-base-content/80 uppercase">
+          {bgColor || "Transparent"}
+        </span>
+        <span className="text-xs text-base-content/50">
+          Click to pick color
+        </span>
+      </div>
+    </div>
+    
+    {isRestored && (
+      <p className="text-xs text-error mt-2 font-medium">
+        *AI Restore active. Background color disabled.
+      </p>
+    )}
+  </div>
+)}
               </div>
             </div>
           </div>

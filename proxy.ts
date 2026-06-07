@@ -17,13 +17,20 @@ const isPublicApiRoute = createRouteMatcher([
   '/videos(.*)',
   '/api/image-upload',
   '/api/images/public'
-]);
+]); 
 
-export default clerkMiddleware(async (auth,req)=>{
-  const {userId}=await auth()
+export default clerkMiddleware((auth,req)=>{
+  const {userId}=auth
   const currentUrl=new URL(req.url)
   const isHomePage=currentUrl.pathname==='/home'  
   const isApiRequest=currentUrl.pathname.startsWith('/api')
+
+  if (!isPublicRoute(req)) {
+    const authObject = await auth();
+    if (!authObject.userId) {
+      return authObject.redirectToSignIn();
+    }
+  }
 
   if (currentUrl.pathname === '/') {
     return NextResponse.redirect(new URL('/home', req.url));

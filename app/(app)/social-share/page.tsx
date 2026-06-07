@@ -469,7 +469,7 @@ if (!isMounted) {
       src={uploadedImage}
       width={socialFormats[selectedFormat].width}
       height={socialFormats[selectedFormat].height}
-      crop="fill"
+      crop="pad"
       gravity="auto"
       format={isRemoveBg && !isRestored ? "png" : "auto"}
       

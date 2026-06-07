@@ -4,52 +4,49 @@ import axios from "axios"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import 'next-cloudinary/dist/cld-video-player.css'
-import { CldUploadWidget, CldVideoPlayer } from "next-cloudinary"
+import { CldUploadWidget, CldVideoPlayer } from "next-cloudinary";
+
+const MAX_FILE_SIZE = 70 * 1024 * 1024
 
 function VideoUpload() {
-  // We no longer store the physical file in React state
+  const [file, setFile] = useState<File | null>(null)
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
-  
-  // We store the Cloudinary info after the direct upload finishes
-  const [uploadedVideoId, setUploadedVideoId] = useState<string | null>(null)
-  const [videoOriginalSize, setVideoOriginalSize] = useState<number>(0)
-  
-  const [isSaving, setIsSaving] = useState<boolean>(false)
+  const [isUploading, setIsUploading] = useState<boolean>(false)
 
   const router = useRouter()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    
-    if (!uploadedVideoId) {
-      toast.warning("Please upload a video first!")
+    if (!file) return
+
+    if (file.size > MAX_FILE_SIZE) {
+      toast.warning("File is too large",{
+        description: "Please select a video under 70MB.",
+        duration:5000,
+      })
       return
     }
 
-    setIsSaving(true)
+    setIsUploading(true)
     try {
-      // THE BIG CHANGE: We are sending JSON now, NOT a massive FormData file!
-      const payload = {
-        title: title,
-        description: description,
-        publicId: uploadedVideoId,      // Send the Cloudinary ID to save in the DB
-        originalSize: videoOriginalSize // Send the byte size from Cloudinary
-      }
-
-      const response = await axios.post("/api/video-upload", payload)
-      
+      const formData = new FormData()
+      formData.append("file", file)
+      formData.append("title", title)
+      formData.append("description", description)
+      formData.append("originalSize", file.size.toString())
+      const response=await axios.post("/api/video-upload", formData)
       if (response.data) {
-        toast.success("Video published successfully!")
         router.push("/") 
       }
     } catch (error) {
       console.error(error)
-      toast.error("Something went wrong saving the details. Please try again.")
+      toast.error("Something went wrong during upload. Please try again.")
     } finally {
-      setIsSaving(false)
+      setIsUploading(false)
     }
   }
+
 
   return (
     <div className="container mx-auto p-4 max-w-2xl mt-10">
@@ -62,7 +59,7 @@ function VideoUpload() {
             {/* Title Input */}
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text font-bold">Video Title</span>
+                <span className="label-text">Video Title</span>
               </label>
               <input 
                 type="text" 
@@ -71,97 +68,52 @@ function VideoUpload() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                disabled={isSaving}
+                disabled={isUploading}
               />
             </div>
 
             {/* Description Input */}
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text font-bold">Description</span>
+                <span className="label-text">Description</span>
               </label>
               <textarea 
                 className="textarea textarea-bordered h-24 w-full focus:outline-none" 
                 placeholder="What is this video about?"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                disabled={isSaving}
+                disabled={isUploading}
               ></textarea>
             </div>
 
-            {/* DIRECT CLOUDINARY UPLOAD SECTION */}
+            {/* File Upload Input */}
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text font-bold">Video File</span>
+                <span className="label-text">Video File (Max 70MB)</span>
               </label>
-              
-              {!uploadedVideoId ? (
-                // Show the upload button if no video is uploaded yet
-                <CldUploadWidget 
-                  uploadPreset="imago_public_preset" // MAKE SURE THIS MATCHES YOUR CLOUDINARY PRESET
-                  options={{
-                    maxFiles: 1,
-                    resourceType: "video",
-                    clientAllowedFormats: ["mp4", "mov", "webm"],
-                    maxFileSize: 70000000, // 70MB limit enforced by Cloudinary directly
-                  }}
-                  onSuccess={(result: any) => {
-                    // Save the Cloudinary data to state
-                    setUploadedVideoId(result?.info?.public_id)
-                    setVideoOriginalSize(result?.info?.bytes)
-                    toast.success("Video uploaded to cloud!")
-                  }}
-                  onError={() => {
-                    toast.error("Video upload failed. Please try again.")
-                  }}
-                >
-                  {({ open }) => {
-                    return (
-                      <button 
-                        type="button"
-                        className="btn btn-outline btn-primary w-full border-dashed border-2" 
-                        onClick={() => open()}
-                      >
-                        <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                        Click to Select Video
-                      </button>
-                    )
-                  }}
-                </CldUploadWidget>
-              ) : (
-                // Show the Video Player preview once uploaded
-                <div className="rounded-xl overflow-hidden bg-black border border-base-300 relative">
-                  <CldVideoPlayer
-                    id="video-preview"
-                    width="1920"
-                    height="1080"
-                    src={uploadedVideoId}
-                    controls
-                  />
-                  <button 
-                    type="button"
-                    className="btn btn-sm btn-error absolute top-2 right-2 opacity-80 hover:opacity-100"
-                    onClick={() => setUploadedVideoId(null)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              )}
+              <input 
+                type="file" 
+                className="file-input file-input-bordered file-input-primary w-full" 
+                accept="video/mp4, video/quicktime, video/webm"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                required
+                disabled={isUploading}
+              />
             </div>
 
-            {/* Submit Button (Only saves data to DB now) */}
+            {/* Submit Button */}
             <button 
               type="submit" 
               className="btn btn-primary w-full mt-4"
-              disabled={isSaving || !uploadedVideoId}
+              disabled={isUploading}
             >
-              {isSaving ? (
+              {isUploading ? (
                 <>
                   <span className="loading loading-spinner"></span>
-                  Saving Details...
+                  Processing & Compressing...
                 </>
               ) : (
-                "Publish Video"
+                "Upload Video"
               )}
             </button>
 

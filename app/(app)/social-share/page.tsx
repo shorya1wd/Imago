@@ -1,6 +1,6 @@
 "use client"
 import {useState,useRef,useEffect} from "react"
-import { CldImage } from "next-cloudinary"
+import { CldImage,getCldImageUrl } from "next-cloudinary"
 import axios from "axios";
 import { useUser, SignInButton } from "@clerk/nextjs";
 import { toast } from "sonner";
@@ -523,6 +523,21 @@ if (!isMounted) {
   >
     {!uploadedImage ? "Waiting for image..." : "Download Transformed Image"}
   </button>
+  {uploadedImage && (
+  <a 
+    href={getCldImageUrl({
+      src: uploadedImage,
+      width: 1080,
+      height: 1920,
+      crop: "fill",
+      gravity: "auto"
+    })}
+    target="_blank" 
+    className="btn btn-error w-full mt-4"
+  >
+    DEBUG: Tap here to see Cloudinary Error
+  </a>
+)}
 
   {/* ◄ CONDITIONAL RENDERING ► */}
   {isLoaded && (

@@ -42,7 +42,7 @@ export default function VideoPage() {
   }, [params.id])
 
   const getFullVideoUrl = useCallback((publicId: string) => {
-    return getCldVideoUrl({ src: publicId, width: 1920, height: 1080 })
+    return getCldVideoUrl({ src: publicId,quality:"auto",format:"mp4"})
   }, [])
 
   const handleDownload = useCallback(() => {

@@ -1,6 +1,7 @@
 "use client"
 import {useState,useRef,useEffect} from "react"
-import { CldImage,getCldImageUrl } from "next-cloudinary"
+import { CldImage, getCldImageUrl } from "next-cloudinary"
+import Image from "next/image"
 import axios from "axios";
 import { useUser, SignInButton } from "@clerk/nextjs";
 import { toast } from "sonner";
@@ -147,7 +148,7 @@ function SocialShare() {
     const response = await fetch(imageRef.current.src);
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
-    const img = new Image();
+    const img = new window.Image();
     
     img.onload = async () => {
       const canvas = document.createElement('canvas');
@@ -205,7 +206,7 @@ function SocialShare() {
   .then((response) => response.blob())
   .then((blob) => {
     const url = URL.createObjectURL(blob);
-    const img = new Image();
+    const img = document.createElement('img');
     
     img.onload = () => {
       // 1. Create an invisible HTML canvas
@@ -462,7 +463,7 @@ if (!isMounted) {
                 <p className="text-base-content/50 justify-center flex items-center">Upload an image to see preview</p>
               ) : (
                 <div className="relative inline-block max-w-full max-h-full">
-    <CldImage
+    {/*<CldImage
     
       key={`${selectedFormat}-${hasOverlay}-${isEnhanced}-${isRemoveBg}-${filter}`}
       ref={imageRef}
@@ -500,6 +501,43 @@ if (!isMounted) {
         toast.error("Failed to apply transformation")
       }}
     />
+    */}
+    {/* We generate the exact Cloudinary URL ourselves, overriding Next.js */}
+<Image
+  ref={imageRef}
+  crossOrigin="anonymous" 
+  src={getCldImageUrl({
+    src: uploadedImage,
+    width: socialFormats[selectedFormat].width,
+    height: socialFormats[selectedFormat].height,
+    crop: "fill",
+    gravity: "auto",
+    format: isRemoveBg && !isRestored ? "png" : "auto",
+    improve: isEnhanced ? true : undefined,
+    removeBackground: isRemoveBg ? true : undefined,
+    restore: isRestored ? true : undefined,
+    grayscale: filter === "grayscale",
+    sepia: filter === "sepia",
+    blur: filter === "blur" ? "800" : undefined,
+    pixelateFaces: filter === "pixelateFaces" ? "20" : undefined,
+    blurFaces: filter === "blurFaces" ? "800" : undefined,
+    cartoonify: filter === "cartoonify" ? true : undefined,
+    negate: filter === "invert" ? true : undefined,
+    oilPaint: filter === "oilPaint" ? "40" : undefined,
+    vignette: filter === "vignette" ? "50" : undefined,
+    background: isRemoveBg && debouncedBgColor ? debouncedBgColor.replace("#", "rgb:") : undefined
+  })}
+  alt="Social Media Preview"
+  width={socialFormats[selectedFormat].width}
+  height={socialFormats[selectedFormat].height}
+  className="max-w-full max-h-full object-contain rounded-lg shadow-lg transition-opacity duration-300"
+  style={{ opacity: isTransforming ? 0.3 : 1 }}
+  onLoad={() => setIsTransforming(false)}
+  onError={() => {
+    setIsTransforming(false);
+    toast.error("Failed to apply transformation");
+  }}
+/>
 
     {/* NEW: Pure HTML/CSS Visual Preview of the Watermark */}
     {hasOverlay && (
@@ -523,21 +561,6 @@ if (!isMounted) {
   >
     {!uploadedImage ? "Waiting for image..." : "Download Transformed Image"}
   </button>
-  {uploadedImage && (
-  <a 
-    href={getCldImageUrl({
-      src: uploadedImage,
-      width: 1080,
-      height: 1920,
-      crop: "fill",
-      gravity: "auto"
-    })}
-    target="_blank" 
-    className="btn btn-error w-full mt-4"
-  >
-    DEBUG: Tap here to see Cloudinary Error
-  </a>
-)}
 
   {/* ◄ CONDITIONAL RENDERING ► */}
   {isLoaded && (

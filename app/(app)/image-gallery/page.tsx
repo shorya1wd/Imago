@@ -52,37 +52,34 @@ export default function CommunityGallery() {
     return `${days} days ago`;
   };
 
-  
+
 const handleDownload = (img: PublicImage) => {
+    // 1. Instantly trigger the spinner
     setDownloadingId(img.id);
     
-    // Using a tiny timeout just so the UI spinner shows up for half a second
+    try {
+      // 2. Do the download calculation IMMEDIATELY (No timeout wrapper)
+      const baseUrl = getCldImageUrl({ src: img.publicId });
+      const downloadUrl = baseUrl.replace('/upload/', '/upload/fl_attachment/');
+      
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      document.body.appendChild(link);
+      
+      // 3. Fire the click synchronously so the browser trusts it
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success("Download started!");
+    } catch (error) {
+      console.error("Download failed:", error);
+      toast.error("Failed to start download.");
+    }
+
+    // 4. Reset the button state after 1 second just for a nice UI effect
     setTimeout(() => {
-      try {
-        // 1. Generate the raw URL using Next-Cloudinary
-        const baseUrl = getCldImageUrl({ src: img.publicId });
-        
-        // 2. Inject the attachment flag to force a direct download (Bypasses CORS entirely)
-        const downloadUrl = baseUrl.replace('/upload/', '/upload/fl_attachment/');
-        
-        // 3. Create a temporary anchor tag to trigger the URL
-        const link = document.createElement("a");
-        link.href = downloadUrl;
-        
-        // Cloudinary handles the file formatting automatically with fl_attachment
-        // so we don't need the blob or fetch logic anymore.
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        toast.success("Download started!");
-      } catch (error) {
-        console.error("Download failed:", error);
-        toast.error("Failed to start download.");
-      } finally {
-        setDownloadingId(null);
-      }
-    }, 500);
+      setDownloadingId(null);
+    }, 1000);
   };
 
   if (isLoading) {

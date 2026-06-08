@@ -130,7 +130,7 @@ const VideoCard:React.FC<VideoCardProps> = ({video,onDownload}) => {
                     >
                         <Download size={16} /> Download
                     </button>
-                    <a 
+                   <a 
           href={(() => {
             const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
             const fullUrl = getCldVideoUrl({ src: video.publicId, format: "mp4" });
@@ -138,7 +138,7 @@ const VideoCard:React.FC<VideoCardProps> = ({video,onDownload}) => {
             
             return `${baseUrl}/upload/fl_attachment:${safeTitle}/${video.publicId}.mp4`;
           })()}
-          target="_blank"  {/* ◄ THIS PREVENTS THE TAB LOCKOUT */}
+          target="_blank"
           rel="noopener noreferrer"
           download={`${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4`}
           className="btn btn-success w-full gap-2 font-semibold"

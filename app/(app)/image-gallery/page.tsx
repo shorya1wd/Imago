@@ -52,37 +52,37 @@ export default function CommunityGallery() {
     return `${days} days ago`;
   };
 
-  const handleDownload = async (img: PublicImage) => {
+  
+const handleDownload = (img: PublicImage) => {
     setDownloadingId(img.id);
-    try {
-      // 1. Generate the raw URL using Next-Cloudinary
-      const url = getCldImageUrl({ src: img.publicId });
-      
-      // 2. Fetch the image as a Blob to force a direct download (prevents opening in new tab)
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Network response was not ok");
-      
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-      
-      // 3. Create a temporary anchor tag to trigger the download
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = `imago-creation-${img.id.slice(-6)}.${img.format || 'jpg'}`;
-      document.body.appendChild(link);
-      link.click();
-      
-      // 4. Cleanup
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-      
-      toast.success("Image downloaded successfully!");
-    } catch (error) {
-      console.error("Download failed:", error);
-      toast.error("Failed to download image.");
-    } finally {
-      setDownloadingId(null);
-    }
+    
+    // Using a tiny timeout just so the UI spinner shows up for half a second
+    setTimeout(() => {
+      try {
+        // 1. Generate the raw URL using Next-Cloudinary
+        const baseUrl = getCldImageUrl({ src: img.publicId });
+        
+        // 2. Inject the attachment flag to force a direct download (Bypasses CORS entirely)
+        const downloadUrl = baseUrl.replace('/upload/', '/upload/fl_attachment/');
+        
+        // 3. Create a temporary anchor tag to trigger the URL
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        
+        // Cloudinary handles the file formatting automatically with fl_attachment
+        // so we don't need the blob or fetch logic anymore.
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast.success("Download started!");
+      } catch (error) {
+        console.error("Download failed:", error);
+        toast.error("Failed to start download.");
+      } finally {
+        setDownloadingId(null);
+      }
+    }, 500);
   };
 
   if (isLoading) {

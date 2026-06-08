@@ -64,7 +64,7 @@ const VideoCard:React.FC<VideoCardProps> = ({video,onDownload}) => {
 
     const original = parseInt(video.originalSize);
 const compressed = parseInt(video.compressedSize);
-    const compressionPercentage = ((original - compressed) / original) * 100;
+    const compressionPercentage = Math.round(((original - compressed) / original) * 100);
 
 
 

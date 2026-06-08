@@ -116,17 +116,7 @@ export default function VideoPage() {
           
           {/* Create the clean, raw URL directly inside the href */}
           <a 
-            href={(() => {
-              if (!video) return "#";
-              const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-              const fullUrl = getFullVideoUrl(video.publicId); 
-              
-              // Extract base domain
-              const baseUrl = fullUrl.split('/upload/')[0]; 
-              
-              // Rebuild raw URL to bypass the rendering engine entirely
-              return `${baseUrl}/upload/fl_attachment:${safeTitle}/${video.publicId}.mp4`;
-            })()}
+            href={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/fl_attachment/${video.publicId}.mp4`}
             target="_blank" 
             rel="noopener noreferrer"
             download={video ? `${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4` : "download.mp4"}

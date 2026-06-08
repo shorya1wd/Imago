@@ -55,6 +55,8 @@ function VideoUpload() {
   const handleSuccess = async (result: any) => {
     setIsUploading(true);
     console.log("Cloudinary Success Data:", result.info);
+    const info = result.info;
+    const derived = info.derived?.[0];
     try {
       // ◄ Now we just send the ID, not the 77MB file!
       await axios.post("/api/video-upload", {
@@ -62,7 +64,8 @@ function VideoUpload() {
         title:title || "",
         description:description || "",
         duration: result.info.duration,
-        originalSize: result.info.bytes
+        originalSize: result.info.bytes,
+        compressedSize: derived ? derived.bytes : info.bytes
       });
       toast.success("Video uploaded successfully!");
       router.push("/");

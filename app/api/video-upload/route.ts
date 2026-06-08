@@ -46,7 +46,7 @@ export async function POST(request:NextRequest){
             data:{
                 publicId:body.publicId,
                 originalSize:String(body.originalSize),
-                compressedSize:String(actualCompressedSize),
+                compressedSize:body.compressedSize || String(actualCompressedSize),
                 duration:body.duration || 0,
                 title:body.title,
                 description:body.description,

@@ -36,11 +36,11 @@ export async function POST(request:NextRequest){
 
         const video=await prisma.video.create({
             data:{
-                publicId:body.public_id,
+                publicId:body.publicId,
                 originalSize:body.originalSize,
                 compressedSize:String(body.compressedSize),
                 duration:body.duration || 0,
-                title:body.title,
+                title:body.title || "Untitled",
                 description:body.description,
                 userId:userId
             }

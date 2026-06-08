@@ -1,12 +1,13 @@
 import React,{useState,useCallback} from 'react'
 import {getCldImageUrl,getCldVideoUrl} from "next-cloudinary"
-import {Download,Clock,FileDown,FileUp} from "lucide-react"
+import {Download,Clock,FileDown,FileUp, Loader} from "lucide-react"
 import dayjs from 'dayjs'
 import relativeTime from "dayjs/plugin/relativeTime"
 import {filesize} from "filesize"
 import { Video } from '@prisma/client'
 import {useRouter} from 'next/navigation'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 dayjs.extend(relativeTime)
 
@@ -21,6 +22,10 @@ const VideoCard:React.FC<VideoCardProps> = ({video,onDownload}) => {
 
     const [isHovered,setIsHovered] = useState(false);
     const [previewError,setPreviewError] = useState(false);
+    const isProcessing = video.originalSize === video.compressedSize; 
+const savedPercent = isProcessing ? 0 : ((Number(video.originalSize) - Number(video.compressedSize)) / Number(video.originalSize)) * 100;
+
+const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto:best,f_auto/fl_attachment/${video.publicId}.mp4`;
 
     const getThumbnailUrl = useCallback((publicId:string) => {
         return getCldImageUrl({
@@ -121,15 +126,31 @@ const compressed = parseInt(video.compressedSize);
           <div className="card-actions justify-end mt-4">
                     
                    <a 
-                   href={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto:best,f_auto/fl_attachment/${video.publicId}.mp4`}
-          target="_blank"
+                   href={isProcessing ? "#" : downloadUrl}
+      target={isProcessing ? "_self" : "_blank"}
           rel="noopener noreferrer"
-          download={`${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4`}
-          className="btn btn-success w-full gap-2 font-semibold"
-          onClick={(e) => e.stopPropagation()}
+          download={!isProcessing ? `${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4` : undefined}
+      className={`btn w-full gap-2 font-semibold ${isProcessing ? 'btn-disabled opacity-50' : 'btn-success'}`}
+          onClick={(e) => {
+        if (isProcessing) {
+          e.preventDefault();
+          toast.info("Cloudinary is still compressing this video. Please check back in a minute!");
+        } else {
+          e.stopPropagation();
+        }
+      }}
         >
+          {isProcessing ? (
+        <>
+          <Loader size={18} className="animate-spin" />
+          Compressing...
+        </>
+      ) : (
+        <>
           <Download size={18} />
-          Download
+          Download Compressed
+        </>
+      )}
         </a>
                 </div>
       </div>

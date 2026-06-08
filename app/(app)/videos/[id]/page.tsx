@@ -6,7 +6,7 @@ import axios from 'axios'
 import type { Video } from '@prisma/client'
 
 import { getCldVideoUrl } from 'next-cloudinary'
-import { Download, Clock, FileUp, FileDown, ArrowLeft,Trash2 } from 'lucide-react'
+import { Download, Clock, FileUp, FileDown, ArrowLeft,Trash2, Loader } from 'lucide-react'
 import dayjs from 'dayjs'
 import relativeTime from "dayjs/plugin/relativeTime"
 import { filesize } from "filesize"
@@ -25,6 +25,7 @@ export default function VideoPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  
   
 
   useEffect(() => {
@@ -85,6 +86,15 @@ export default function VideoPage() {
 
   const compressionPercentage = Math.round((1 - Number(video.compressedSize) / Number(video.originalSize)) * 100);
 
+  const isProcessing = video 
+  ? parseInt(video.originalSize) === parseInt(video.compressedSize) 
+  : false;
+
+// 2. Safely construct the URL
+const downloadUrl = video 
+  ? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto:best,f_auto/fl_attachment/${video.publicId}.mp4`
+  : "#";
+
   return (
     <div className="container mx-auto p-4 max-w-6xl mt-8">
       {/* Back Button */}
@@ -116,15 +126,30 @@ export default function VideoPage() {
           
           {/* Create the clean, raw URL directly inside the href */}
           <a 
-          href={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto:best,f_auto/fl_attachment/${video.publicId}.mp4`}
-
-            target="_blank" 
-            rel="noopener noreferrer"
-            download={video ? `${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4` : "download.mp4"}
-            className="btn btn-primary w-full mb-6"
-          >
-            <Download size={20} /> Download Source
-          </a>
+    href={isProcessing ? "#" : downloadUrl}
+    target={isProcessing ? "_self" : "_blank"} 
+    rel="noopener noreferrer"
+    download={(!isProcessing && video) ? `${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4` : undefined}
+    className={`btn w-full mb-6 gap-2 ${isProcessing ? 'btn-disabled opacity-50 cursor-not-allowed' : 'btn-primary'}`}
+    onClick={(e) => {
+      if (isProcessing) {
+        e.preventDefault();
+        toast.info("Cloudinary is still compressing this video. Please wait a moment!");
+      }
+    }}
+  >
+    {isProcessing ? (
+      <>
+        <Loader size={20} className="animate-spin" /> 
+        Compressing Video...
+      </>
+    ) : (
+      <>
+        <Download size={20} /> 
+        Download Compressed Source
+      </>
+    )}
+  </a>
           {userId === video.userId && (
     <button 
       onClick={handleDelete}

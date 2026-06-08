@@ -98,12 +98,7 @@ function VideoUpload() {
           {/* ◄ The Widget Replaces the <input type="file" /> */}
           <CldUploadWidget 
             uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-            options={{ 
-            resourceType: "video",
-            // @ts-expect-error: Transformation is supported by Cloudinary API
-            eager: [{ quality: "auto", fetch_format: "mp4" }],
-            eager_async: true          
-            }}
+            
             onSuccess={handleSuccess}
           >
             {({ open }) => (

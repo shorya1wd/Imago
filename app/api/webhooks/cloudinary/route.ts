@@ -4,6 +4,10 @@ import prisma from "../../../../lib/prisma"
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
+
+        console.log("--- RAW CLOUDINARY PAYLOAD ---");
+        console.log(JSON.stringify(body, null, 2));
+        console.log("------------------------------");
         
         // Log EVERY time Cloudinary knocks, no matter what it says
         console.log(`\n🛎️ WEBHOOK KNOCK: Type -> ${body.notification_type}`);

@@ -34,11 +34,19 @@ export async function POST(request:NextRequest){
         const body = await request.json();
         console.log("arrived body:",body)
 
+ let actualCompressedSize = body.originalSize; // Fallback
+        try {
+            const resource = await cloudinary.api.resource(body.publicId, { resource_type: "video" });
+            actualCompressedSize = resource.bytes;
+        } catch (e) {
+            console.warn("Could not fetch exact size from Cloudinary, using original:", e);
+        }
+        
         const video=await prisma.video.create({
             data:{
                 publicId:body.publicId,
-                originalSize:body.originalSize,
-                compressedSize:String(body.compressedSize),
+                originalSize:String(body.originalSize),
+                compressedSize:String(actualCompressedSize),
                 duration:body.duration || 0,
                 title:body.title || "Untitled",
                 description:body.description,

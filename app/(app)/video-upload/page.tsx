@@ -35,12 +35,17 @@ function VideoUpload() {
       formData.append("title", title)
       formData.append("description", description)
       formData.append("originalSize", file.size.toString())
-      const response=await axios.post("/api/video-upload", formData)
+      const response=await axios.post("/api/video-upload", formData,{
+        timeout: 300000, // 5 minutes (in milliseconds)
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }
+      })
       if (response.data) {
         router.push("/") 
       }
-    } catch (error) {
-      console.error(error)
+    } catch (error:any) {
+    console.error("Upload error details:", error.response?.data || error.message)
       toast.error("Something went wrong during upload. Please try again.")
     } finally {
       setIsUploading(false)
@@ -89,7 +94,7 @@ function VideoUpload() {
             {/* File Upload Input */}
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text">Video File (Max 70MB)</span>
+                <span className="label-text">Video File (Max 100MB)</span>
               </label>
               <input 
                 type="file" 

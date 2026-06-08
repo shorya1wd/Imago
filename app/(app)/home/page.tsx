@@ -27,22 +27,27 @@ export default function Home() {
     fetchVideos()
   }, [])
 // The Download Handler: Injects Cloudinary's attachment flag to bypass CORS
- const handleDownload = useCallback((url: string, title: string) => {
+const handleDownload = useCallback(async (url: string, title: string) => {
     try {
-      // 1. Inject the attachment flag right after '/upload/'
-      const downloadUrl = url.replace('/upload/', '/upload/fl_attachment/');
+      // 1. Sanitize the title
+      const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      
+      // 2. Force Cloudinary's server to use YOUR filename
+      // Format: /upload/fl_attachment:custom-filename/
+      const downloadUrl = url.includes('/upload/') 
+        ? url.replace('/upload/', `/upload/fl_attachment:${safeTitle}/`)
+        : url;
 
-      // 2. Create the native HTML anchor tag
+      // 3. Fire the native download
       const link = document.createElement('a');
       link.href = downloadUrl;
-      
-      const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-      link.setAttribute('download', `${safeTitle}.mp4`);
-      
-      // 3. Trigger the click synchronously
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // 4. THE SPINNER FIX: Give VideoCard an async Promise to resolve
+      // This guarantees the spinner shuts off so you can click it again.
+      await new Promise(resolve => setTimeout(resolve, 800));
       
     } catch (err) {
       console.error("Download failed:", err);

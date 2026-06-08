@@ -46,29 +46,31 @@ export default function VideoPage() {
     return getCldVideoUrl({ src: publicId,quality:"auto",format:"mp4"})
   }, [])
 
- const handleDownload = useCallback(() => {
+ const handleDownload = useCallback(async () => {
     if (!video) return;
     try {
-      // 1. Get the URL and inject the attachment flag
+      // 1. Sanitize and generate the URL
+      const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
       const url = getFullVideoUrl(video.publicId);
-      const downloadUrl = url.replace('/upload/', '/upload/fl_attachment/');
       
-      // 2. Create the native HTML anchor tag
+      // 2. Inject the custom filename into the Cloudinary route
+      const downloadUrl = url.includes('/upload/') 
+        ? url.replace('/upload/', `/upload/fl_attachment:${safeTitle}/`)
+        : url;
+
+      // 3. Fire the native download
       const link = document.createElement('a');
       link.href = downloadUrl;
-      
-      const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-      link.setAttribute('download', `${safeTitle}.mp4`);
-      
-      // 3. Trigger the click synchronously
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
     } catch (err) {
       console.error("Download failed:", err);
     }
   }, [video, getFullVideoUrl]);
+
+  
   const handleDelete = async () => {
     // Standard browser confirmation dialog to prevent accidents
     if (!window.confirm("Are you sure you want to delete this video? This action cannot be undone.")) {

@@ -13,6 +13,8 @@ function VideoUpload() {
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
   const [isUploading, setIsUploading] = useState<boolean>(false)
+  const titleRef = useRef("");
+const descRef = useRef("");
 
   const router = useRouter()
 
@@ -61,8 +63,8 @@ function VideoUpload() {
       // ◄ Now we just send the ID, not the 77MB file!
       await axios.post("/api/video-upload", {
         publicId: result.info.public_id,
-        title:title || "",
-        description:description || "",
+        title:titleRef.current || "Untitled",
+        description:descRef.current || "",
         duration: result.info.duration,
         originalSize: result.info.bytes,
         compressedSize: derived ? derived.bytes : info.bytes
@@ -92,8 +94,8 @@ function VideoUpload() {
           <h2 className="card-title text-2xl mb-6">Upload New Video</h2>
           
           {/* Inputs for Title and Description */}
-          <input type="text" className="input input-bordered w-full" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <textarea className="textarea textarea-bordered w-full" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <input type="text" className="input input-bordered w-full" placeholder="Title" value={title} onChange={(e) => {setTitle(e.target.value); titleRef.current = e.target.value}} />
+          <textarea className="textarea textarea-bordered w-full" placeholder="Description" value={description} onChange={(e) => {setDescription(e.target.value); descRef.current = e.target.value}} />
 
           {/* ◄ The Widget Replaces the <input type="file" /> */}
           <CldUploadWidget 

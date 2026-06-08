@@ -27,6 +27,8 @@ export default function VideoPage() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false);
 
+  
+
   useEffect(() => {
     const fetchVideo = async () => {
       try {
@@ -40,6 +42,36 @@ export default function VideoPage() {
     }
     if (params.id) fetchVideo()
   }, [params.id])
+
+  useEffect(() => {
+    // 1. If the video hasn't loaded yet, do nothing
+    if (!video) return;
+
+    // 2. Check if it is currently processing
+    const isCurrentlyProcessing = video.originalSize === video.compressedSize;
+
+    // 3. If it's already finished, we don't need to poll. Stop here.
+    if (!isCurrentlyProcessing) return;
+
+    // 4. Set up the 5-second interval
+    const interval = setInterval(async () => {
+      try {
+        const response = await axios.post('/api/videos/sync', { id: video.id });
+        
+        // 5. If the size changed, Cloudinary is done! Update the UI.
+        if (response.data.compressedSize !== video.compressedSize) {
+          setVideo(response.data); // This instantly turns the UI green
+          toast.success("Video compression complete!");
+        }
+      } catch (error) {
+        console.error("Auto-sync failed in VideoPage");
+      }
+    }, 5000); // 5000ms = 5 seconds
+
+    // 6. Cleanup: stop the interval if they navigate away or if it finishes
+    return () => clearInterval(interval);
+    
+  }, [video]); // This tells React to re-evaluate whenever the 'video' state changes
 
   const getFullVideoUrl = useCallback((publicId: string) => {
     return getCldVideoUrl({ src: publicId, quality: "auto", format: "mp4"})
@@ -68,11 +100,8 @@ export default function VideoPage() {
     const response = await axios.post('/api/videos/sync', { id: video.id });
     
     if (response.data.compressedSize !== video.compressedSize) {
-      setVideo(response.data); // Updates the UI instantly!
-      toast.success("Compression data synced!");
-    } else {
-      toast.info("Cloudinary is still processing. Check back in a minute.");
-    }
+      setVideo(response.data); // Updates the UI instantly!  
+    } 
   } catch (error) {
     toast.error("Failed to sync data.");
   } finally {
@@ -89,7 +118,7 @@ export default function VideoPage() {
   const isProcessing = originalSize === compressedSize;
   const savedPercent = isProcessing ? 0 : ((originalSize - compressedSize) / originalSize) * 100;
   
-  const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto:best,f_auto/fl_attachment/${video.publicId}.mp4`;
+  const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto:best/fl_attachment/${video.publicId}.mp4`;
 
   return (
     <div className="container mx-auto p-4 max-w-6xl mt-8">

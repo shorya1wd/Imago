@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback ,useEffect} from 'react'
 import { getCldImageUrl, getCldVideoUrl } from "next-cloudinary"
 import { Download, Clock, FileDown, FileUp, RefreshCw } from "lucide-react"
 import dayjs from 'dayjs'
@@ -33,7 +33,27 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
     const isProcessing = originalSize === compressedSize; 
     const savedPercent = isProcessing ? 0 : ((originalSize - compressedSize) / originalSize) * 100;
 
-    const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto:best,f_auto/fl_attachment/${currentVideo.publicId}.mp4`;
+    const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto:best/fl_attachment/${currentVideo.publicId}.mp4`;
+
+    useEffect(() => {
+    // If it's not processing, do nothing
+    if (!isProcessing) return;
+
+    // Create an interval that checks Cloudinary every 5 seconds
+    const interval = setInterval(async () => {
+        try {
+            const response = await axios.post('/api/videos/sync', { id: currentVideo.id });
+            if (response.data.compressedSize !== currentVideo.compressedSize) {
+                setCurrentVideo(response.data); // Updates UI to Green!
+            }
+        } catch (error) {
+            console.error("Auto-sync failed");
+        }
+    }, 5000); // 5000ms = 5 seconds
+
+    // Cleanup interval when component unmounts or finishes
+    return () => clearInterval(interval);
+}, [isProcessing, currentVideo.id, currentVideo.compressedSize]);
 
     // --- Media URL Generators ---
     const getThumbnailUrl = useCallback((publicId: string) => {
@@ -64,11 +84,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
             const response = await axios.post('/api/videos/sync', { id: currentVideo.id });
             
             if (response.data.compressedSize !== currentVideo.compressedSize) {
-                setCurrentVideo(response.data); // ◄ Instantly updates the UI!
-                toast.success("Video compression complete!");
-            } else {
-                toast.info("Cloudinary is still processing. Check back in a minute.");
-            }
+                setCurrentVideo(response.data); // ◄ Instantly updates the UI!   
+            } 
         } catch (error) {
             toast.error("Failed to sync data.");
         } finally {

@@ -121,15 +121,7 @@ const VideoCard:React.FC<VideoCardProps> = ({video,onDownload}) => {
           </div>
 
           <div className="card-actions justify-end mt-4">
-                    <button 
-                        className="btn btn-primary btn-sm z-10 relative"
-                        onClick={(e) => {
-                            e.stopPropagation(); // ◄ STOPS THE MODAL FROM OPENING WHEN DOWNLOADING
-                            onDownload(getFullVideoUrl(video.publicId), video.title)
-                        }}
-                    >
-                        <Download size={16} /> Download
-                    </button>
+                    
                    <a 
           href={(() => {
             const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
@@ -142,6 +134,7 @@ const VideoCard:React.FC<VideoCardProps> = ({video,onDownload}) => {
           rel="noopener noreferrer"
           download={`${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4`}
           className="btn btn-success w-full gap-2 font-semibold"
+          onClick={(e) => e.stopPropagation()}
         >
           <Download size={18} />
           Download

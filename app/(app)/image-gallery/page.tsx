@@ -151,36 +151,24 @@ const handleDownload = (img: PublicImage) => {
                 </div>
 
                 {/* Download Button matching your Video UI */}
-                <div className="card-actions mt-auto">
-                  {images.map((img) => {
-          // Pre-calculate the forced-download URL here
-          const baseUrl = getCldImageUrl({ src: img.publicId });
-          const downloadUrl = baseUrl.replace('/upload/', '/upload/fl_attachment/');
-
-          return (
-            <div key={img.id} className="card bg-base-100 shadow-xl border border-base-200 overflow-hidden group hover:shadow-2xl transition-all duration-300">
-              
-              {/* ... [KEEP ALL YOUR IMAGE PREVIEW CODE THE SAME] ... */}
-
-              <div className="card-body p-4 bg-base-100">
-                
-                {/* ... [KEEP YOUR METADATA LIST THE SAME] ... */}
-
-                {/* ◄ THE NEW BUTTON ► */}
-                <div className="card-actions mt-auto">
+              <div className="card-actions mt-auto">
                   <a 
-                    href={downloadUrl}
+                    href={(() => {
+                      const safeName = `imago-creation-${img.id.slice(-6)}`;
+                      const fullUrl = getCldImageUrl({ src: img.publicId });
+                      const baseUrl = fullUrl.split('/upload/')[0];
+                      // Bypasses the rendering engine entirely
+                      return `${baseUrl}/upload/fl_attachment:${safeName}/${img.publicId}.${img.format || 'jpg'}`;
+                    })()}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    download={`imago-creation-${img.id.slice(-6)}.${img.format || 'jpg'}`}
                     className="btn btn-success w-full gap-2 font-semibold"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <Download size={18} />
                     Download
                   </a>
-                </div>
-                
-              </div>
-            </div>
-          );
-        })}
                 </div>
                 
               </div>

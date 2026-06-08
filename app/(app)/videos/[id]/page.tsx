@@ -113,12 +113,7 @@ export default function VideoPage() {
 
         {/* Stats Sidebar */}
         <div className="w-full md:w-80 bg-base-200 p-6 rounded-2xl h-fit">
-          <button 
-            onClick={handleDownload}
-            className="btn btn-primary w-full mb-6"
-          >
-            <Download size={20} /> Download Source
-          </button>
+          
           {/* Create the clean, raw URL directly inside the href */}
           <a 
             href={(() => {
@@ -126,12 +121,15 @@ export default function VideoPage() {
               const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
               const fullUrl = getFullVideoUrl(video.publicId); 
               
-              // 1. Get the base domain (everything before '/upload/')
+              // Extract base domain
               const baseUrl = fullUrl.split('/upload/')[0]; 
               
-              // 2. Rebuild the URL with ZERO transformations. Just the attachment flag and the file.
+              // Rebuild raw URL to bypass the rendering engine entirely
               return `${baseUrl}/upload/fl_attachment:${safeTitle}/${video.publicId}.mp4`;
             })()}
+            target="_blank" 
+            rel="noopener noreferrer"
+            download={video ? `${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4` : "download.mp4"}
             className="btn btn-primary w-full mb-6"
           >
             <Download size={20} /> Download Source

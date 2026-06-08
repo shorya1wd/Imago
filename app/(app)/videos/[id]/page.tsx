@@ -25,6 +25,7 @@ export default function VideoPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -59,6 +60,25 @@ export default function VideoPage() {
       setIsDeleting(false);
     }
   };
+
+  const handleSync = async () => {
+  if (!video) return;
+  setIsSyncing(true);
+  try {
+    const response = await axios.post('/api/videos/sync', { id: video.id });
+    
+    if (response.data.compressedSize !== video.compressedSize) {
+      setVideo(response.data); // Updates the UI instantly!
+      toast.success("Compression data synced!");
+    } else {
+      toast.info("Cloudinary is still processing. Check back in a minute.");
+    }
+  } catch (error) {
+    toast.error("Failed to sync data.");
+  } finally {
+    setIsSyncing(false);
+  }
+};
 
   if (isLoading) return <div className="flex justify-center items-center min-h-[60vh]"><span className="loading loading-spinner loading-lg text-primary"></span></div>
   if (error || !video) return <div className="alert alert-error max-w-lg mx-auto mt-10"><span>{error || "Video not found"}</span></div>
@@ -139,12 +159,13 @@ export default function VideoPage() {
                 <div className="flex items-center gap-2 text-warning">
                   <span className="font-semibold animate-pulse">Processing...</span>
                   <button 
-                    onClick={() => window.location.reload()} 
-                    className="btn btn-ghost btn-xs btn-circle hover:bg-warning/20"
-                    title="Check if compression is finished"
-                  >
-                    <RefreshCw size={14} />
-                  </button>
+  onClick={handleSync} 
+  disabled={isSyncing}
+  className="btn btn-ghost btn-xs btn-circle hover:bg-warning/20"
+  title="Check if compression is finished"
+>
+  <RefreshCw size={14} className={isSyncing ? "animate-spin" : ""} />
+</button>
                 </div>
               ) : (
                 <span className="text-success">{filesize(compressedSize)}</span>

@@ -101,7 +101,8 @@ function VideoUpload() {
             options={{ 
             resourceType: "video",
             // @ts-expect-error: Transformation is supported by Cloudinary API
-            transformation: [{ quality: "auto", fetch_format: "mp4" }] 
+            eager: [{ quality: "auto", fetch_format: "mp4" }],
+            eager_async: true          
             }}
             onSuccess={handleSuccess}
           >

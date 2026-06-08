@@ -149,7 +149,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
                             </button>
                         </div>
                     ) : (
-                        <span className="flex items-center gap-1 text-success font-medium">
+                        <span className="flex items-center gap-1 text-primary font-medium">
                             <FileDown size={14} /> {formatSize(compressedSize)} (-{savedPercent.toFixed(0)}%)
                         </span>
                     )}
@@ -161,7 +161,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
                         target={isProcessing ? "_self" : "_blank"}
                         rel="noopener noreferrer"
                         download={!isProcessing ?`${currentVideo.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4`: undefined}
-                        className={`btn w-full gap-2 font-semibold ${isProcessing ? 'btn-disabled opacity-60 cursor-not-allowed' : 'btn-success'}`}
+                        className={`btn w-full gap-2 font-semibold ${isProcessing ? 'btn-disabled opacity-60 cursor-not-allowed' : 'btn-primary'}`}
                         onClick={(e) => {
                         e.stopPropagation(); // Prevents routing to the video page
                         if (isProcessing) {

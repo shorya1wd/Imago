@@ -170,7 +170,7 @@ const handleDownload = (img: PublicImage) => {
                       const validExt = (img.format && img.format.length <= 4) ? img.format.toLowerCase() : 'png';
                       return `imago-creation-${img.id.slice(-6)}.${validExt}`;
                     })()}
-                    className="btn btn-success w-full gap-2 font-semibold"
+                    className="btn btn-primary w-full gap-2 font-semibold"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <Download size={18} />

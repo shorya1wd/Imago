@@ -150,14 +150,21 @@ export default function VideoPage() {
         <div className="w-full md:w-80 bg-base-200 p-6 rounded-2xl h-fit">
           
           <a 
-            href={downloadUrl}
-            target="_blank" 
-            rel="noopener noreferrer"
-            download={`${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4`}
-            className="btn btn-primary w-full mb-6 gap-2"
-          >
-            <Download size={20} /> Download Source
-          </a>
+    href={isProcessing ? "#" : downloadUrl}
+    target={isProcessing ? "_self" : "_blank"} 
+    rel="noopener noreferrer"
+    download={(!isProcessing && video) ? `${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4` : undefined}
+    className={`btn w-full mb-6 gap-2 ${isProcessing ? 'btn-disabled opacity-60 cursor-not-allowed' : 'btn-primary'}`}
+    onClick={(e) => {
+        if (isProcessing) {
+            e.preventDefault(); // Prevents the dead page navigation!
+            toast.info("Please wait! Cloudinary is still compressing this video.");
+        }
+    }}
+>
+    <Download size={20} /> 
+    {isProcessing ? "Preparing Source..." : "Download Source"}
+</a>
 
           {userId === video.userId && (
             <button 

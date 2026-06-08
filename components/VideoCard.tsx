@@ -157,15 +157,21 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
 
                 <div className="card-actions justify-end mt-4">
                     <a 
-                        href={downloadUrl}
-                        target="_blank"
+                        href={isProcessing ? "#" : downloadUrl}
+                        target={isProcessing ? "_self" : "_blank"}
                         rel="noopener noreferrer"
-                        download={`${currentVideo.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4`}
-                        className="btn btn-success w-full gap-2 font-semibold"
-                        onClick={(e) => e.stopPropagation()}
+                        download={!isProcessing ?`${currentVideo.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4`: undefined}
+                        className={`btn w-full gap-2 font-semibold ${isProcessing ? 'btn-disabled opacity-60 cursor-not-allowed' : 'btn-success'}`}
+                        onClick={(e) => {
+                        e.stopPropagation(); // Prevents routing to the video page
+                        if (isProcessing) {
+                        e.preventDefault(); // Prevents the dead page navigation!
+                        toast.info("Please wait! Cloudinary is still compressing this video.");
+                        }
+                        }}
                     >
                         <Download size={18} />
-                        Download
+                        {isProcessing ? "Preparing Download..." : "Download"}
                     </a>
                 </div>
             </div>

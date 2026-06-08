@@ -152,20 +152,35 @@ const handleDownload = (img: PublicImage) => {
 
                 {/* Download Button matching your Video UI */}
                 <div className="card-actions mt-auto">
-                  <button 
-                    onClick={() => handleDownload(img)}
-                    disabled={downloadingId === img.id}
+                  {images.map((img) => {
+          // Pre-calculate the forced-download URL here
+          const baseUrl = getCldImageUrl({ src: img.publicId });
+          const downloadUrl = baseUrl.replace('/upload/', '/upload/fl_attachment/');
+
+          return (
+            <div key={img.id} className="card bg-base-100 shadow-xl border border-base-200 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+              
+              {/* ... [KEEP ALL YOUR IMAGE PREVIEW CODE THE SAME] ... */}
+
+              <div className="card-body p-4 bg-base-100">
+                
+                {/* ... [KEEP YOUR METADATA LIST THE SAME] ... */}
+
+                {/* ◄ THE NEW BUTTON ► */}
+                <div className="card-actions mt-auto">
+                  <a 
+                    href={downloadUrl}
                     className="btn btn-success w-full gap-2 font-semibold"
                   >
-                    {downloadingId === img.id ? (
-                      <span className="loading loading-spinner loading-sm"></span>
-                    ) : (
-                      <>
-                        <Download size={18} />
-                        Download
-                      </>
-                    )}
-                  </button>
+                    <Download size={18} />
+                    Download
+                  </a>
+                </div>
+                
+              </div>
+            </div>
+          );
+        })}
                 </div>
                 
               </div>

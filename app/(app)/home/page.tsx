@@ -26,27 +26,29 @@ export default function Home() {
     }
     fetchVideos()
   }, [])
-
-  // The Download Handler: Fetches the Cloudinary URL and forces the browser to download it
+// The Download Handler: Injects Cloudinary's attachment flag to bypass CORS
   const handleDownload = useCallback((url: string, title: string) => {
-    // We fetch the blob directly so the browser triggers a true download instead of just opening it in a new tab
-    fetch(url)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = objectUrl;
-        
-        // Sanitize the title for the filename
-        const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-        link.setAttribute('download', `${safeTitle}.mp4`);
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(objectUrl);
-      })
-      .catch((err) => console.error("Download failed:", err));
+    try {
+      // 1. Inject the attachment flag right after '/upload/'
+      // This tells Cloudinary to force a download instead of playing the video
+      const downloadUrl = url.replace('/upload/', '/upload/fl_attachment/');
+
+      // 2. Create the native HTML anchor tag
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      
+      // Sanitize title for the fallback filename (though Cloudinary handles the main extension)
+      const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      link.setAttribute('download', `${safeTitle}.mp4`);
+      
+      // 3. Trigger the click synchronously (Immediate, no timeouts)
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+    } catch (err) {
+      console.error("Download failed:", err);
+    }
   }, []);
 
   if (isLoading) {

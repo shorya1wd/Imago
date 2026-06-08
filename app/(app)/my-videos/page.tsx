@@ -27,32 +27,36 @@ export default function MyVideosPage() {
     }
     fetchVideos()
   }, [])
-
-
 const handleDownload = useCallback(async (url: string, title: string) => {
+    const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    
     try {
-      // 1. Sanitize the title
-      const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      // 1. Reverting to YOUR original Blob method. This guarantees exact file naming.
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Network response was not ok");
       
-      // 2. Force Cloudinary's server to use YOUR filename
-      // Format: /upload/fl_attachment:custom-filename/
-      const downloadUrl = url.includes('/upload/') 
-        ? url.replace('/upload/', `/upload/fl_attachment:${safeTitle}/`)
-        : url;
-
-      // 3. Fire the native download
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      
       const link = document.createElement('a');
-      link.href = downloadUrl;
+      link.href = objectUrl;
+      link.download = `${safeTitle}.mp4`;
+      
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      // 4. THE SPINNER FIX: Give VideoCard an async Promise to resolve
-      // This guarantees the spinner shuts off so you can click it again.
-      await new Promise(resolve => setTimeout(resolve, 800));
+      URL.revokeObjectURL(objectUrl);
       
     } catch (err) {
-      console.error("Download failed:", err);
+      console.error("Fetch failed, using native fallback:", err);
+      // 2. ONLY if a laptop adblocker/CORS blocks the fetch: Native fallback that OPENS IN NEW TAB
+      const fallbackUrl = url.includes('/upload/') ? url.replace('/upload/', `/upload/fl_attachment:${safeTitle}/`) : url;
+      const fallbackLink = document.createElement('a');
+      fallbackLink.href = fallbackUrl;
+      fallbackLink.target = '_blank'; // CRITICAL: Stops the browser from navigating away and spinning at the top
+      document.body.appendChild(fallbackLink);
+      fallbackLink.click();
+      document.body.removeChild(fallbackLink);
     }
   }, []);
 

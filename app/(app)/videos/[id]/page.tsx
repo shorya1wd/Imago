@@ -45,32 +45,42 @@ export default function VideoPage() {
   const getFullVideoUrl = useCallback((publicId: string) => {
     return getCldVideoUrl({ src: publicId,quality:"auto",format:"mp4"})
   }, [])
-
- const handleDownload = useCallback(async () => {
+const handleDownload = useCallback(async () => {
     if (!video) return;
+    const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    const url = getFullVideoUrl(video.publicId);
+    
     try {
-      // 1. Sanitize and generate the URL
-      const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-      const url = getFullVideoUrl(video.publicId);
+      // 1. Your original Blob method
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Network response was not ok");
       
-      // 2. Inject the custom filename into the Cloudinary route
-      const downloadUrl = url.includes('/upload/') 
-        ? url.replace('/upload/', `/upload/fl_attachment:${safeTitle}/`)
-        : url;
-
-      // 3. Fire the native download
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      
       const link = document.createElement('a');
-      link.href = downloadUrl;
+      link.href = objectUrl;
+      link.download = `${safeTitle}.mp4`;
+      
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
+      URL.revokeObjectURL(objectUrl);
+      
     } catch (err) {
-      console.error("Download failed:", err);
+      console.error("Fetch failed, using native fallback:", err);
+      // 2. Safe fallback
+      const fallbackUrl = url.includes('/upload/') ? url.replace('/upload/', `/upload/fl_attachment:${safeTitle}/`) : url;
+      const fallbackLink = document.createElement('a');
+      fallbackLink.href = fallbackUrl;
+      fallbackLink.target = '_blank';
+      document.body.appendChild(fallbackLink);
+      fallbackLink.click();
+      document.body.removeChild(fallbackLink);
     }
   }, [video, getFullVideoUrl]);
 
-  
+
   const handleDelete = async () => {
     // Standard browser confirmation dialog to prevent accidents
     if (!window.confirm("Are you sure you want to delete this video? This action cannot be undone.")) {

@@ -85,7 +85,7 @@ function VideoUpload() {
 
           {/* ◄ The Widget Replaces the <input type="file" /> */}
           <CldUploadWidget 
-            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "video-uploads"}
             options={{ resourceType: "video" }}
             onSuccess={handleSuccess}
           >

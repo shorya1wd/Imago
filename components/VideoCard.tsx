@@ -130,13 +130,23 @@ const VideoCard:React.FC<VideoCardProps> = ({video,onDownload}) => {
                     >
                         <Download size={16} /> Download
                     </button> */}
-                  <a 
-  href={getCldVideoUrl({ src: video.publicId, quality: "auto", format: "mp4" }).replace('/upload/', `/upload/fl_attachment:${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}/`)}
-  className="btn btn-success w-full gap-2 font-semibold"
-  onClick={(e) => {
-                            e.stopPropagation(); // ◄ STOPS THE MODAL FROM OPENING WHEN DOWNLOADING
-                            onDownload(getFullVideoUrl(video.publicId), video.title)
-                        }}
+                 <a 
+          href={(() => {
+            const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+            // 1. Generate standard Next-Cloudinary URL
+            const fullUrl = getCldVideoUrl({ src: video.publicId, format: "mp4" });
+            
+            // 2. Extract base domain
+            const baseUrl = fullUrl.split('/upload/')[0];
+            
+            // 3. Rebuild raw URL to bypass the rendering engine entirely
+            return `${baseUrl}/upload/fl_attachment:${safeTitle}/${video.publicId}.mp4`;
+          })()}
+          className="btn btn-success w-full gap-2 font-semibold"
+        >
+          <Download size={18} />
+          Download
+        </a>
 >
   <Download size={18} />
   Download

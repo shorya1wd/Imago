@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import 'next-cloudinary/dist/cld-video-player.css'
 import { CldUploadWidget, CldVideoPlayer } from "next-cloudinary";
 
-const MAX_FILE_SIZE = 70 * 1024 * 1024
+const MAX_FILE_SIZE = 100 * 1024 * 1024
 
 function VideoUpload() {
   const [file, setFile] = useState<File | null>(null)
@@ -22,7 +22,7 @@ function VideoUpload() {
 
     if (file.size > MAX_FILE_SIZE) {
       toast.warning("File is too large",{
-        description: "Please select a video under 70MB.",
+        description: "Please select a video under 100MB.",
         duration:5000,
       })
       return

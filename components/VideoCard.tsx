@@ -121,7 +121,7 @@ const VideoCard:React.FC<VideoCardProps> = ({video,onDownload}) => {
           </div>
 
           <div className="card-actions justify-end mt-4">
-                    <button 
+                    {/* <button 
                         className="btn btn-primary btn-sm z-10 relative"
                         onClick={(e) => {
                             e.stopPropagation(); // ◄ STOPS THE MODAL FROM OPENING WHEN DOWNLOADING
@@ -129,7 +129,18 @@ const VideoCard:React.FC<VideoCardProps> = ({video,onDownload}) => {
                         }}
                     >
                         <Download size={16} /> Download
-                    </button>
+                    </button> */}
+                  <a 
+  href={getCldVideoUrl({ src: video.publicId, quality: "auto", format: "mp4" }).replace('/upload/', `/upload/fl_attachment:${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}/`)}
+  className="btn btn-success w-full gap-2 font-semibold"
+  onClick={(e) => {
+                            e.stopPropagation(); // ◄ STOPS THE MODAL FROM OPENING WHEN DOWNLOADING
+                            onDownload(getFullVideoUrl(video.publicId), video.title)
+                        }}
+>
+  <Download size={18} />
+  Download
+</a>
                 </div>
       </div>
   </div>

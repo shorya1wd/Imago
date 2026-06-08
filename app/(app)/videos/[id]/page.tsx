@@ -131,12 +131,12 @@ const handleDownload = useCallback(async () => {
 
         {/* Stats Sidebar */}
         <div className="w-full md:w-80 bg-base-200 p-6 rounded-2xl h-fit">
-          <button 
-            onClick={handleDownload}
+         <a 
+            href={getFullVideoUrl(video.publicId).replace('/upload/', `/upload/fl_attachment:${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}/`)}
             className="btn btn-primary w-full mb-6"
           >
             <Download size={20} /> Download Source
-          </button>
+          </a>
           {userId === video.userId && (
     <button 
       onClick={handleDelete}

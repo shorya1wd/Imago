@@ -52,81 +52,57 @@ function VideoUpload() {
     }
   }
 
+  const handleSuccess = async (result: any) => {
+    setIsUploading(true);
+    try {
+      // ◄ Now we just send the ID, not the 77MB file!
+      await axios.post("/api/video-upload", {
+        publicId: result.info.public_id,
+        title,
+        description,
+        duration: result.info.duration,
+        originalSize: result.info.bytes
+      });
+      toast.success("Video uploaded successfully!");
+      router.push("/");
+    } catch (error) {
+      toast.error("Failed to save video details.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
-  return (
+
+ return (
     <div className="container mx-auto p-4 max-w-2xl mt-10">
       <div className="card bg-base-100 shadow-xl border border-base-200">
         <div className="card-body">
-          <h2 className="card-title text-2xl mb-6 text-base-content">Upload New Video</h2>
+          <h2 className="card-title text-2xl mb-6">Upload New Video</h2>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
-            
-            {/* Title Input */}
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Video Title</span>
-              </label>
-              <input 
-                type="text" 
-                placeholder="My awesome video" 
-                className="input input-bordered w-full focus:outline-none" 
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
+          {/* Inputs for Title and Description */}
+          <input type="text" className="input input-bordered w-full" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <textarea className="textarea textarea-bordered w-full" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+
+          {/* ◄ The Widget Replaces the <input type="file" /> */}
+          <CldUploadWidget 
+            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+            options={{ resourceType: "video" }}
+            onSuccess={handleSuccess}
+          >
+            {({ open }) => (
+              <button 
+                type="button" 
+                className="btn btn-primary w-full mt-4" 
+                onClick={() => open()}
                 disabled={isUploading}
-              />
-            </div>
-
-            {/* Description Input */}
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Description</span>
-              </label>
-              <textarea 
-                className="textarea textarea-bordered h-24 w-full focus:outline-none" 
-                placeholder="What is this video about?"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                disabled={isUploading}
-              ></textarea>
-            </div>
-
-            {/* File Upload Input */}
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Video File (Max 100MB)</span>
-              </label>
-              <input 
-                type="file" 
-                className="file-input file-input-bordered file-input-primary w-full" 
-                accept="video/mp4, video/quicktime, video/webm"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-                required
-                disabled={isUploading}
-              />
-            </div>
-
-            {/* Submit Button */}
-            <button 
-              type="submit" 
-              className="btn btn-primary w-full mt-4"
-              disabled={isUploading}
-            >
-              {isUploading ? (
-                <>
-                  <span className="loading loading-spinner"></span>
-                  Processing & Compressing...
-                </>
-              ) : (
-                "Upload Video"
-              )}
-            </button>
-
-          </form>
+              >
+                {isUploading ? "Uploading..." : "Select & Upload Video"}
+              </button>
+            )}
+          </CldUploadWidget>
         </div>
       </div>
     </div>
-  )
+  );
 }
-
 export default VideoUpload

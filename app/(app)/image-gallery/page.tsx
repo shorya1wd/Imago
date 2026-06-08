@@ -157,12 +157,19 @@ const handleDownload = (img: PublicImage) => {
                       const safeName = `imago-creation-${img.id.slice(-6)}`;
                       const fullUrl = getCldImageUrl({ src: img.publicId });
                       const baseUrl = fullUrl.split('/upload/')[0];
-                      // Bypasses the rendering engine entirely
-                      return `${baseUrl}/upload/fl_attachment:${safeName}/${img.publicId}.${img.format || 'jpg'}`;
+                      
+                      // Safety Check: If the format is a long word like "Thumbnail", force it to "png"
+                      const validExt = (img.format && img.format.length <= 4) ? img.format.toLowerCase() : 'png';
+                      
+                      return `${baseUrl}/upload/fl_attachment:${safeName}/${img.publicId}.${validExt}`;
                     })()}
                     target="_blank" 
                     rel="noopener noreferrer"
-                    download={`imago-creation-${img.id.slice(-6)}.${img.format || 'jpg'}`}
+                    download={(() => {
+                      // Same safety check for the actual downloaded file name
+                      const validExt = (img.format && img.format.length <= 4) ? img.format.toLowerCase() : 'png';
+                      return `imago-creation-${img.id.slice(-6)}.${validExt}`;
+                    })()}
                     className="btn btn-success w-full gap-2 font-semibold"
                     onClick={(e) => e.stopPropagation()}
                   >

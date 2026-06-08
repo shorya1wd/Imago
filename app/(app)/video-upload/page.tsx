@@ -54,6 +54,7 @@ function VideoUpload() {
 
   const handleSuccess = async (result: any) => {
     setIsUploading(true);
+    console.log("Cloudinary Success Data:", result.info);
     try {
       // ◄ Now we just send the ID, not the 77MB file!
       await axios.post("/api/video-upload", {
@@ -65,8 +66,16 @@ function VideoUpload() {
       });
       toast.success("Video uploaded successfully!");
       router.push("/");
-    } catch (error) {
-      toast.error("Failed to save video details.");
+    } catch (error:any) {
+      if (error.response) {
+        console.error("Server responded with error:", error.response.data);
+        toast.error(`Server Error: ${JSON.stringify(error.response.data)}`);
+      } else if (error.request) {
+        console.error("No response received from server:", error.request);
+        toast.error("No response from server. Check Nginx/PM2 logs.");
+      } else {
+        console.error("Axios setup error:", error.message);
+      }
     } finally {
       setIsUploading(false);
     }
@@ -85,7 +94,7 @@ function VideoUpload() {
 
           {/* ◄ The Widget Replaces the <input type="file" /> */}
           <CldUploadWidget 
-            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "video-uploads"}
+            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "imago_public_preset"}
             options={{ resourceType: "video" }}
             onSuccess={handleSuccess}
           >

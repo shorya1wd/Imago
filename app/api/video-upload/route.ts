@@ -32,6 +32,7 @@ export async function POST(request:NextRequest){
         }
 
         const body = await request.json();
+        console.log("arrived body:",body)
 
         const video=await prisma.video.create({
             data:{

@@ -62,11 +62,9 @@ const VideoCard:React.FC<VideoCardProps> = ({video,onDownload}) => {
         return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
     },[]);
 
-    const original = Number(video.originalSize) || 0;
-    const compressed = Number(video.compressedSize) || 0;
-    const compressionPercentage = original > 0 
-    ? Math.round((1 - compressed / original) * 100) 
-    : 0;
+    const original = parseInt(video.originalSize);
+const compressed = parseInt(video.compressedSize);
+    const compressionPercentage = ((original - compressed) / original) * 100;
 
 
 
@@ -123,13 +121,7 @@ const VideoCard:React.FC<VideoCardProps> = ({video,onDownload}) => {
           <div className="card-actions justify-end mt-4">
                     
                    <a 
-          href={(() => {
-            const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-            const fullUrl = getCldVideoUrl({ src: video.publicId, format: "mp4" });
-            const baseUrl = fullUrl.split('/upload/')[0];
-            
-            return `${baseUrl}/upload/fl_attachment:${safeTitle}/${video.publicId}.mp4`;
-          })()}
+          href={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/fl_attachment/${video.publicId}.mp4`}
           target="_blank"
           rel="noopener noreferrer"
           download={`${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4`}

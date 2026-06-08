@@ -41,14 +41,14 @@ export async function POST(request:NextRequest){
         } catch (e) {
             console.warn("Could not fetch exact size from Cloudinary, using original:", e);
         }
-        
+
         const video=await prisma.video.create({
             data:{
                 publicId:body.publicId,
                 originalSize:String(body.originalSize),
                 compressedSize:String(actualCompressedSize),
                 duration:body.duration || 0,
-                title:body.title || "Untitled",
+                title:body.title,
                 description:body.description,
                 userId:userId
             }

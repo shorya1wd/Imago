@@ -59,8 +59,8 @@ function VideoUpload() {
       // ◄ Now we just send the ID, not the 77MB file!
       await axios.post("/api/video-upload", {
         publicId: result.info.public_id,
-        title,
-        description,
+        title:title || "",
+        description:description || "",
         duration: result.info.duration,
         originalSize: result.info.bytes
       });
@@ -94,8 +94,12 @@ function VideoUpload() {
 
           {/* ◄ The Widget Replaces the <input type="file" /> */}
           <CldUploadWidget 
-            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "imago_public_preset"}
-            options={{ resourceType: "video" }}
+            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+            options={{ 
+            resourceType: "video",
+            // @ts-expect-error: Transformation is supported by Cloudinary API
+            transformation: [{ quality: "auto", fetch_format: "mp4" }] 
+            }}
             onSuccess={handleSuccess}
           >
             {({ open }) => (

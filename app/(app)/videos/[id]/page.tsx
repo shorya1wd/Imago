@@ -116,7 +116,8 @@ export default function VideoPage() {
           
           {/* Create the clean, raw URL directly inside the href */}
           <a 
-            href={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/fl_attachment/${video.publicId}.mp4`}
+          href={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto:best,f_auto/fl_attachment/${video.publicId}.mp4`}
+
             target="_blank" 
             rel="noopener noreferrer"
             download={video ? `${video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4` : "download.mp4"}

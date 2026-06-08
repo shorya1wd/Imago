@@ -119,6 +119,23 @@ export default function VideoPage() {
           >
             <Download size={20} /> Download Source
           </button>
+          {/* Create the clean, raw URL directly inside the href */}
+          <a 
+            href={(() => {
+              if (!video) return "#";
+              const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+              const fullUrl = getFullVideoUrl(video.publicId); 
+              
+              // 1. Get the base domain (everything before '/upload/')
+              const baseUrl = fullUrl.split('/upload/')[0]; 
+              
+              // 2. Rebuild the URL with ZERO transformations. Just the attachment flag and the file.
+              return `${baseUrl}/upload/fl_attachment:${safeTitle}/${video.publicId}.mp4`;
+            })()}
+            className="btn btn-primary w-full mb-6"
+          >
+            <Download size={20} /> Download Source
+          </a>
           {userId === video.userId && (
     <button 
       onClick={handleDelete}

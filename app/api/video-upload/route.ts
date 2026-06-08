@@ -48,12 +48,9 @@ export async function POST(request:NextRequest){
                 {
                     resource_type:"video",
                     folder:"video-uploads",
-                    eager: [
-                        { quality: "auto", fetch_format: "mp4" },
-                        { raw_transformation: "e_preview:duration_10:max_seg_7:min_seg_dur_1" }
-                    ],
-                    eager_async: true,
-                    notification_url: "https://imagomediastudio.com/api/webhooks/cloudinary"
+                    transformation: [
+                        { quality: "auto", fetch_format: "mp4" }
+                    ]
                 },
                 (error,result)=>{
                     if(error){

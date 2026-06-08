@@ -24,10 +24,7 @@ export default function Home() {
         setIsLoading(false)
       }
     }
-
     fetchVideos()
-    const interval = setInterval(fetchVideos, 10000); // Poll every 10 seconds
-    return () => clearInterval(interval);
   }, [])
 
   // The Download Handler: Fetches the Cloudinary URL and forces the browser to download it

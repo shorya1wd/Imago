@@ -26,38 +26,27 @@ export default function Home() {
     }
     fetchVideos()
   }, [])
-// The Download Handler: Injects Cloudinary's attachment flag to bypass CORS
-const handleDownload = useCallback(async (url: string, title: string) => {
-    const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-    
-    try {
-      // 1. Reverting to YOUR original Blob method. This guarantees exact file naming.
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Network response was not ok");
-      
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      
-      const link = document.createElement('a');
-      link.href = objectUrl;
-      link.download = `${safeTitle}.mp4`;
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(objectUrl);
-      
-    } catch (err) {
-      console.error("Fetch failed, using native fallback:", err);
-      // 2. ONLY if a laptop adblocker/CORS blocks the fetch: Native fallback that OPENS IN NEW TAB
-      const fallbackUrl = url.includes('/upload/') ? url.replace('/upload/', `/upload/fl_attachment:${safeTitle}/`) : url;
-      const fallbackLink = document.createElement('a');
-      fallbackLink.href = fallbackUrl;
-      fallbackLink.target = '_blank'; // CRITICAL: Stops the browser from navigating away and spinning at the top
-      document.body.appendChild(fallbackLink);
-      fallbackLink.click();
-      document.body.removeChild(fallbackLink);
-    }
+
+  // The Download Handler: Fetches the Cloudinary URL and forces the browser to download it
+  const handleDownload = useCallback((url: string, title: string) => {
+    // We fetch the blob directly so the browser triggers a true download instead of just opening it in a new tab
+    fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        
+        // Sanitize the title for the filename
+        const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+        link.setAttribute('download', `${safeTitle}.mp4`);
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(objectUrl);
+      })
+      .catch((err) => console.error("Download failed:", err));
   }, []);
 
   if (isLoading) {

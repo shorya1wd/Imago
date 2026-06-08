@@ -15,7 +15,6 @@ import { useAuth } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
-
 dayjs.extend(relativeTime)
 
 export default function VideoPage() {
@@ -45,41 +44,24 @@ export default function VideoPage() {
   const getFullVideoUrl = useCallback((publicId: string) => {
     return getCldVideoUrl({ src: publicId,quality:"auto",format:"mp4"})
   }, [])
-const handleDownload = useCallback(async () => {
-    if (!video) return;
-    const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-    const url = getFullVideoUrl(video.publicId);
-    
-    try {
-      // 1. Your original Blob method
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Network response was not ok");
-      
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      
-      const link = document.createElement('a');
-      link.href = objectUrl;
-      link.download = `${safeTitle}.mp4`;
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(objectUrl);
-      
-    } catch (err) {
-      console.error("Fetch failed, using native fallback:", err);
-      // 2. Safe fallback
-      const fallbackUrl = url.includes('/upload/') ? url.replace('/upload/', `/upload/fl_attachment:${safeTitle}/`) : url;
-      const fallbackLink = document.createElement('a');
-      fallbackLink.href = fallbackUrl;
-      fallbackLink.target = '_blank';
-      document.body.appendChild(fallbackLink);
-      fallbackLink.click();
-      document.body.removeChild(fallbackLink);
-    }
-  }, [video, getFullVideoUrl]);
 
+  const handleDownload = useCallback(() => {
+    if (!video) return;
+    const url = getFullVideoUrl(video.publicId);
+    fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+        link.setAttribute('download', `${safeTitle}.mp4`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(objectUrl);
+      });
+  }, [video, getFullVideoUrl]);
 
   const handleDelete = async () => {
     // Standard browser confirmation dialog to prevent accidents
@@ -131,23 +113,12 @@ const handleDownload = useCallback(async () => {
 
         {/* Stats Sidebar */}
         <div className="w-full md:w-80 bg-base-200 p-6 rounded-2xl h-fit">
-         {/* Create the clean, raw URL directly inside the href */}
-          <a 
-            href={(() => {
-              if (!video) return "#";
-              const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-              const fullUrl = getFullVideoUrl(video.publicId); 
-              
-              // 1. Get the base domain (everything before '/upload/')
-              const baseUrl = fullUrl.split('/upload/')[0]; 
-              
-              // 2. Rebuild the URL with ZERO transformations. Just the attachment flag and the file.
-              return `${baseUrl}/upload/fl_attachment:${safeTitle}/${video.publicId}.mp4`;
-            })()}
+          <button 
+            onClick={handleDownload}
             className="btn btn-primary w-full mb-6"
           >
             <Download size={20} /> Download Source
-          </a>
+          </button>
           {userId === video.userId && (
     <button 
       onClick={handleDelete}

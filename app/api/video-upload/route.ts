@@ -20,20 +20,17 @@ export async function POST(request: NextRequest) {
         
         // 1. Force the original size to be a String no matter what
         const safeOriginalSize = String(body.originalSize || "0");
-        
-        // 2. Default compressed size to original size (in case it's still processing)
-        let safeCompressedSize = safeOriginalSize; 
+let safeCompressedSize = safeOriginalSize; 
 
-        // 3. Try to get the actual compressed size, but don't crash if it's busy
-        try {
-            const resource = await cloudinary.api.resource(body.publicId, { resource_type: "video" });
-            if (resource && resource.bytes) {
-                safeCompressedSize = String(resource.bytes);
-            }
-        } catch (e) {
-            console.log("Cloudinary is still processing in the background. Using fallback size.");
-        }
-
+try {
+    // Ask Cloudinary for the REAL size
+    const resource = await cloudinary.api.resource(body.publicId, { resource_type: "video" });
+    if (resource && resource.bytes) {
+        safeCompressedSize = String(resource.bytes);
+    }
+} catch (e) {
+    console.log("Still processing, using temporary fallback.");
+}
         // 4. Save to Database with guaranteed Strings
         const video = await prisma.video.create({
             data: {

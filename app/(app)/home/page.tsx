@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 import { Video } from '@prisma/client'
 import VideoCard from "../../../components/VideoCard"
-import { revalidatePath } from 'next/cache';
 
 export default function Home() {
   const [videos, setVideos] = useState<Video[]>([])
@@ -16,7 +15,7 @@ export default function Home() {
     const fetchVideos = async () => {
       try {
         const response = await axios.get('/api/videos')
-        revalidatePath('/home');
+        
         setVideos(response.data)
       } catch (err) {
         console.error(err)
@@ -27,6 +26,8 @@ export default function Home() {
     }
 
     fetchVideos()
+    const interval = setInterval(fetchVideos, 10000); // Poll every 10 seconds
+    return () => clearInterval(interval);
   }, [])
 
   // The Download Handler: Fetches the Cloudinary URL and forces the browser to download it

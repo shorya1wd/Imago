@@ -46,24 +46,29 @@ export default function VideoPage() {
     return getCldVideoUrl({ src: publicId,quality:"auto",format:"mp4"})
   }, [])
 
-  const handleDownload = useCallback(() => {
+ const handleDownload = useCallback(() => {
     if (!video) return;
-    const url = getFullVideoUrl(video.publicId);
-    fetch(url)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = objectUrl;
-        const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-        link.setAttribute('download', `${safeTitle}.mp4`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(objectUrl);
-      });
+    try {
+      // 1. Get the URL and inject the attachment flag
+      const url = getFullVideoUrl(video.publicId);
+      const downloadUrl = url.replace('/upload/', '/upload/fl_attachment/');
+      
+      // 2. Create the native HTML anchor tag
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      
+      const safeTitle = video.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      link.setAttribute('download', `${safeTitle}.mp4`);
+      
+      // 3. Trigger the click synchronously
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+    } catch (err) {
+      console.error("Download failed:", err);
+    }
   }, [video, getFullVideoUrl]);
-
   const handleDelete = async () => {
     // Standard browser confirmation dialog to prevent accidents
     if (!window.confirm("Are you sure you want to delete this video? This action cannot be undone.")) {

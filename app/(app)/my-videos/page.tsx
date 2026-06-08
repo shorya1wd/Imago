@@ -29,25 +29,26 @@ export default function MyVideosPage() {
   }, [])
 
 
-  // ... keep your standard handleDownload function here ...
-// The missing Download Handler!
-  const handleDownload = useCallback((url: string, title: string) => {
-    fetch(url)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = objectUrl;
-        
-        const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-        link.setAttribute('download', `${safeTitle}.mp4`);
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(objectUrl);
-      })
-      .catch((err) => console.error("Download failed:", err));
+ const handleDownload = useCallback((url: string, title: string) => {
+    try {
+      // 1. Inject the attachment flag right after '/upload/'
+      const downloadUrl = url.replace('/upload/', '/upload/fl_attachment/');
+
+      // 2. Create the native HTML anchor tag
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      
+      const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      link.setAttribute('download', `${safeTitle}.mp4`);
+      
+      // 3. Trigger the click synchronously
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+    } catch (err) {
+      console.error("Download failed:", err);
+    }
   }, []);
 
   if (isLoading) return <div className="flex justify-center items-center min-h-[60vh]"><span className="loading loading-spinner loading-lg text-primary"></span></div>

@@ -27,21 +27,19 @@ export default function Home() {
     fetchVideos()
   }, [])
 // The Download Handler: Injects Cloudinary's attachment flag to bypass CORS
-  const handleDownload = useCallback((url: string, title: string) => {
+ const handleDownload = useCallback((url: string, title: string) => {
     try {
       // 1. Inject the attachment flag right after '/upload/'
-      // This tells Cloudinary to force a download instead of playing the video
       const downloadUrl = url.replace('/upload/', '/upload/fl_attachment/');
 
       // 2. Create the native HTML anchor tag
       const link = document.createElement('a');
       link.href = downloadUrl;
       
-      // Sanitize title for the fallback filename (though Cloudinary handles the main extension)
       const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
       link.setAttribute('download', `${safeTitle}.mp4`);
       
-      // 3. Trigger the click synchronously (Immediate, no timeouts)
+      // 3. Trigger the click synchronously
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

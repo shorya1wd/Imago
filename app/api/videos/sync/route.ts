@@ -30,15 +30,16 @@ export async function POST(request: NextRequest) {
 
         if (resource.derived && resource.derived.length > 0) {
             
-            // 2. Use our new 'CloudinaryDerived' type instead of 'any' or 'unknown'
+            // 1. ONLY look for the file that has 'q_auto' in its transformation. Ignore 'e_preview'.
             const videoDerived = resource.derived.find((d: CloudinaryDerived) => 
-                d.format === "mp4" || (d.transformation && d.transformation.includes("q_auto"))
+                d.transformation && d.transformation.includes("q_auto")
             );
 
             if (videoDerived) {
                 actualCompressedSize = String(videoDerived.bytes);
             } else {
-                // 3. Use it in the reduce function too!
+                // 2. If we can't find it by name, grab the absolute largest file.
+                // The full video will ALWAYS be larger than an 11kb hover preview.
                 const largestDerived = resource.derived.reduce((prev: CloudinaryDerived, current: CloudinaryDerived) => 
                     (prev.bytes > current.bytes) ? prev : current
                 );

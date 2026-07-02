@@ -37,8 +37,8 @@ const descRef = useRef("");
       formData.append("title", title)
       formData.append("description", description)
       formData.append("originalSize", file.size.toString())
-      const response=await axios.post("/api/video-upload", formData,{
-        timeout: 300000, // 5 minutes (in milliseconds)
+        const response=await axios.post("/api/video-upload", formData,{
+        timeout: 300000,
         headers: {
           "Content-Type": "multipart/form-data",
         }
@@ -60,7 +60,6 @@ const descRef = useRef("");
     const info = result.info;
     const derived = info.derived?.[0];
     try {
-      // ◄ Now we just send the ID, not the 77MB file!
       await axios.post("/api/video-upload", {
         publicId: result.info.public_id,
         title:titleRef.current || "Untitled",
@@ -97,7 +96,6 @@ const descRef = useRef("");
           <input type="text" className="input input-bordered w-full" placeholder="Title" value={title} onChange={(e) => {setTitle(e.target.value); titleRef.current = e.target.value}} />
           <textarea className="textarea textarea-bordered w-full" placeholder="Description" value={description} onChange={(e) => {setDescription(e.target.value); descRef.current = e.target.value}} />
 
-          {/* ◄ The Widget Replaces the <input type="file" /> */}
           <CldUploadWidget 
             uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
             options={{ 

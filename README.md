@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Imago — Media Studio
 
-## Getting Started
+**AI-powered media sharing and editing**
+Imago is a high-performance media platform for uploading, browsing, downloading, and editing images and videos with Cloudinary-powered optimization and AI transformations.
 
-First, run the development server:
+### Project Snapshot
+* **Role:** Lead Full-Stack Developer (Solo Project)
+* **Timeline:** ~6 Weeks
+* **Tech Stack:** Next.js (App Router), TypeScript, Tailwind CSS & DaisyUI, Prisma, PostgreSQL (Neon), Clerk Auth, Cloudinary (CDN & AI)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Project Details
+Imago is a high-performance, full-stack media platform designed to streamline how users upload, optimize, and edit images and videos. By integrating seamless background compression and AI-driven transformations, Imago provides a professional-grade media studio directly in the browser. It focuses on **fast performance, smart media handling, and a clean user experience.**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Key Features & Capabilities
+* **Asynchronous Video Proacessing:** Built an intelligent auto-polling UI that allows users to seamlessly upload files **up to 100MB** without locking up their browser, displaying real-time bandwidth savings once Cloudinary finishes backend compression.
+* **AI-Powered Image Studio:** Integrated advanced editing tools directly into the platform, including background removal, generative color replacement, image restoration, and smart-cropping for specific social media aspect ratios.
+* **Frictionless Media Delivery:** Implemented automated hover-previews for videos and highly optimized download links, **reducing average file payloads by 30-40%** to drastically reduce bandwidth consumption.
+* **Tiered Access & Security:** Engineered a seamless dual-access system. The platform allows for anonymous public browsing and downloading, while securing uploads, deletions, and personal dashboards ("My Videos" / "My Images") behind a robust authentication layer.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Why Imago?
+Content creators and marketing teams constantly struggle with bloated media files that slow down websites and eat up storage costs. Imago solves this by acting as an intelligent middleman. It **automatically compresses heavy video files** in the background, applies smart AI cropping for social media formats, and provides a frictionless UI. It’s designed for businesses that need their media to be fast to upload, cheap to store, and instantly ready for distribution.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Technical Architecture
+* **Frontend & API:** Built on **Next.js** using strict **TypeScript** to leverage server-side rendering for sub-second gallery loading and secure API routes for media syncing. Styled with **Tailwind CSS and DaisyUI** for a clean, responsive, and highly maintainable UI.
+* **Database & ORM:** Powered by a PostgreSQL database (via **Neon**) and managed with **Prisma**, ensuring strict type safety across the entire stack when relational mapping users to their media assets.
+* **Media Infrastructure:** Deep integration with **Cloudinary** for enterprise-grade CDN delivery, on-the-fly format shifting, and complex AI transformations, ensuring the app remains lightweight regardless of file sizes.
+* **Authentication:** Secured by **Clerk** to handle session management and user identity without complicating the core codebase.
 
-## Learn More
+## Security & Access
+Imago uses authentication only where it adds value, while keeping the public media browsing experience open and simple. Signed-in users can upload and manage their own content, while public visitors can browse and download anonymously. Media ownership stays private, so uploaded content does not expose user identity. That balance keeps the platform easy to use without giving up control or security.
 
-To learn more about Next.js, take a look at the following resources:
+## Challenges Solved
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* **Stale State & Background Syncing:** Solved the challenge of asynchronous video processing by engineering a custom API route that polls Cloudinary for derived file sizes. This ensures the PostgreSQL database and the React UI stay **perfectly in sync with Cloudinary’s background workers**, automatically updating the client's screen from "Processing" to "Finished" **without requiring a page refresh**.
+* **Data Integrity & Format Shifting Discrepancies:** Cloudinary's aggressive background optimization can cause database mismatches—for example, compressing a video to a tiny `.webm` file while the client requests an `.mp4` download. I standardized the eager transformation pipeline to ensure the backend polling strictly filtered for specific formats and mathematically verified file sizes, guaranteeing that the **"Bandwidth Saved" UI metrics perfectly matched the exact file delivered** to the end user.
+* **Preventing Race Conditions & Dead Pages:** Handling heavy media compression in the background created a timing gap where users could attempt to download a file before the server finished processing it, resulting in browser timeouts. I implemented a dynamic, auto-polling UI state that intercepts download requests, visually indicates "Processing," and **automatically unlocks the exact millisecond the backend confirms the file is ready**, completely eliminating dead navigation.

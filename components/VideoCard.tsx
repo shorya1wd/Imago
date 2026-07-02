@@ -20,14 +20,12 @@ interface VideoCardProps {
 const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
     const router = useRouter();
 
-    // 1. Create a local state for the video so the card can update itself!
     const [currentVideo, setCurrentVideo] = useState<Video>(video);
     
     const [isHovered, setIsHovered] = useState(false);
     const [previewError, setPreviewError] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
     
-    // 2. All math now uses `currentVideo` instead of the original `video` prop
     const originalSize = parseInt(currentVideo.originalSize);
     const compressedSize = parseInt(currentVideo.compressedSize);
     const isProcessing = originalSize === compressedSize; 
@@ -36,22 +34,19 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
     const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto:best/fl_attachment/${currentVideo.publicId}.mp4`;
 
     useEffect(() => {
-    // If it's not processing, do nothing
     if (!isProcessing) return;
 
-    // Create an interval that checks Cloudinary every 5 seconds
     const interval = setInterval(async () => {
         try {
             const response = await axios.post('/api/videos/sync', { id: currentVideo.id });
             if (response.data.compressedSize !== currentVideo.compressedSize) {
-                setCurrentVideo(response.data); // Updates UI to Green!
+                setCurrentVideo(response.data);
             }
         } catch (error) {
             console.error("Auto-sync failed");
         }
-    }, 5000); // 5000ms = 5 seconds
+    }, 5000);
 
-    // Cleanup interval when component unmounts or finishes
     return () => clearInterval(interval);
 }, [isProcessing, currentVideo.id, currentVideo.compressedSize]);
 
@@ -76,15 +71,14 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
         return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
     }, []);
 
-    // 3. The new Sync function specifically for the Card
     const handleSync = async (e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevent clicking the card and routing away
+        e.stopPropagation();
         setIsSyncing(true);
         try {
             const response = await axios.post('/api/videos/sync', { id: currentVideo.id });
             
             if (response.data.compressedSize !== currentVideo.compressedSize) {
-                setCurrentVideo(response.data); // ◄ Instantly updates the UI!   
+                setCurrentVideo(response.data);
             } 
         } catch (error) {
             toast.error("Failed to sync data.");
@@ -133,7 +127,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
                         <FileUp size={14} /> {formatSize(originalSize)} Original
                     </span>
                     
-                    {/* The Smart Status Toggle */}
                     {isProcessing ? (
                         <div className="flex items-center gap-2 text-warning">
                             <span className="flex items-center gap-1 font-semibold animate-pulse">
@@ -163,9 +156,9 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
                         download={!isProcessing ?`${currentVideo.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4`: undefined}
                         className={`btn w-full gap-2 font-semibold ${isProcessing ? 'btn-disabled opacity-60 cursor-not-allowed' : 'btn-primary'}`}
                         onClick={(e) => {
-                        e.stopPropagation(); // Prevents routing to the video page
+                        e.stopPropagation();
                         if (isProcessing) {
-                        e.preventDefault(); // Prevents the dead page navigation!
+                        e.preventDefault();
                         toast.info("Please wait! Cloudinary is still compressing this video.");
                         }
                         }}

@@ -556,10 +556,18 @@ if (!isMounted) {
   height={socialFormats[selectedFormat].height}
   className="max-w-full max-h-full object-contain rounded-lg shadow-lg transition-opacity duration-300"
   style={{ opacity: isTransforming ? 0.3 : 1 }}
-  onLoad={() => setIsTransforming(false)}
-  onError={() => {
+  onLoad={() => {
     setIsTransforming(false);
-    toast.error("Failed to apply transformation");
+  }}
+  onError={() => {
+    // Cloudinary AI transformations can take a few seconds and trigger a temporary error/redirect.
+    // We wait 4 seconds to check if the image successfully loads on retry before showing the toast.
+    setTimeout(() => {
+      if (imageRef.current && (!imageRef.current.complete || imageRef.current.naturalWidth === 0)) {
+        setIsTransforming(false);
+        toast.error("Failed to apply transformation. Please try again.");
+      }
+    }, 4000);
   }}
 />
 

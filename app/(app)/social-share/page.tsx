@@ -536,7 +536,7 @@ if (!isMounted) {
     height: socialFormats[selectedFormat].height,
     crop: "fill",
     gravity: "auto",
-    format: isRemoveBg && !isRestored ? "png" : "auto",
+    format: "auto",
     improve: isEnhanced ? true : undefined,
     removeBackground: isRemoveBg ? true : undefined,
     restore: isRestored ? true : undefined,

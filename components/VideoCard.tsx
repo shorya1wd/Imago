@@ -25,13 +25,21 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [previewError, setPreviewError] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
+    const [isMobile, setIsMobile] = useState(true);
     
     const originalSize = parseInt(currentVideo.originalSize);
     const compressedSize = parseInt(currentVideo.compressedSize);
     const isProcessing = originalSize === compressedSize; 
     const savedPercent = isProcessing ? 0 : ((originalSize - compressedSize) / originalSize) * 100;
 
-    const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto:best/fl_attachment/${currentVideo.publicId}.mp4`;
+    const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto/fl_attachment/${currentVideo.publicId}.mp4`;
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(!window.matchMedia("(pointer: fine)").matches);
+        };
+        checkMobile();
+    }, []);
 
     useEffect(() => {
     if (!isProcessing) return;
@@ -59,7 +67,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
 
     const getPreviewVideoUrl = useCallback((publicId: string) => {
         return getCldVideoUrl({
-            src: publicId, width: 400, height: 225, rawTransformations: ["e_preview:duration_10:max_seg_7:min_seg_dur_1"]
+            src: publicId, width: 400, height: 225, rawTransformations: ["e_preview:duration_3:max_seg_3:min_seg_dur_1"]
         })
     }, [])
 
@@ -95,7 +103,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
             onClick={() => router.push(`/videos/${currentVideo.id}`)}
         >
             <figure className="relative aspect-video bg-base-200">
-                {isHovered && !previewError ? (
+                {isHovered && !isMobile && !previewError ? (
                     <video 
                         src={getPreviewVideoUrl(currentVideo.publicId)}
                         autoPlay muted loop 

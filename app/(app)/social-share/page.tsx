@@ -132,17 +132,19 @@ function SocialShare() {
     }
   }, [uploadedImage, selectedFormat, isEnhanced, isRemoveBg, isRestored, hasOverlay, filter, bgColor, debouncedBgColor, originalFilename]);
 
-    useEffect(() => {
-  if (!bgColor) return; 
+  useEffect(() => {
+    if (!bgColor) return; 
+    // Prevent infinite loading bug on state restore: if they are already identical, skip.
+    if (bgColor === debouncedBgColor) return;
 
-  const timer = setTimeout(() => {
-    setDebouncedBgColor(bgColor);
-    if (uploadedImage) {
-      setIsTransforming(true);
-    }
-  }, 600); 
-  return () => clearTimeout(timer);
-}, [bgColor, uploadedImage]);
+    const timer = setTimeout(() => {
+      setDebouncedBgColor(bgColor);
+      if (uploadedImage) {
+        setIsTransforming(true);
+      }
+    }, 600); 
+    return () => clearTimeout(timer);
+  }, [bgColor, debouncedBgColor, uploadedImage]);
 
   const handleEffectChange = <T,>(setter: (val: T) => void, value: T) => {
   setter(value);

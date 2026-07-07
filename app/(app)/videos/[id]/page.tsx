@@ -120,7 +120,7 @@ export default function VideoPage() {
   const isProcessing = originalSize === compressedSize;
   const savedPercent = isProcessing ? 0 : ((originalSize - compressedSize) / originalSize) * 100;
   
-  const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto,f_mp4/fl_attachment/${video.publicId}.mp4`;
+  const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto,f_mp4,fl_attachment/${video.publicId}.mp4`;
 
   return (
     <div className="container mx-auto p-4 max-w-6xl mt-8">

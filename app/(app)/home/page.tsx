@@ -1,6 +1,6 @@
 import React from 'react'
-import prisma from "../../../../lib/prisma"
 import VideoCard from "../../../components/VideoCard"
+import prisma from "@/lib/prisma"
 
 export const dynamic = "force-dynamic"; // Ensure fresh data on each render
 

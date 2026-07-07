@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useCallback ,useEffect} from 'react'
 import { getCldImageUrl, getCldVideoUrl } from "next-cloudinary"
 import { Download, Clock, FileDown, FileUp, RefreshCw } from "lucide-react"

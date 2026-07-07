@@ -10,6 +10,9 @@ export default function SignUpPage() {
     
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] pointer-events-none"></div>
 
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
       
       <div className="relative z-10 w-full max-w-6xl flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-8">
         
@@ -56,9 +59,6 @@ export default function SignUpPage() {
 
         {/* ◄ AUTHENTICATION COMPONENT ► */}
         <div className="flex-none w-full max-w-md flex justify-center lg:justify-end">
-          <div className="absolute top-6 right-6 z-50">
-            <ThemeToggle />
-          </div>
           <SignUp 
             appearance={{
               elements: {

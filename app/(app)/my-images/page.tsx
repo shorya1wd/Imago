@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { CldImage } from "next-cloudinary";
-import { Trash2, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Trash2, Image as ImageIcon, Loader2, Download } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -116,6 +116,22 @@ export default function ImageGallery() {
                 </p>
 
                 <div className="card-actions justify-end mt-auto pt-2 border-t border-base-200">
+                  <a 
+                    href={(() => {
+                      const safeName = `imago-saved-${img.id.slice(-6)}`;
+                      const validExt = (img.format && img.format.length <= 4) ? img.format.toLowerCase() : 'png';
+                      // Build standard Cloudinary URL to pass to our proxy
+                      const fullUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${img.publicId}`;
+                      return `/api/download?url=${encodeURIComponent(fullUrl)}&filename=${safeName}.${validExt}`;
+                    })()}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="btn btn-primary btn-sm gap-1"
+                  >
+                    <Download size={16} />
+                    Download
+                  </a>
+
                   <button 
                     onClick={() => handleDelete(img.id)}
                     disabled={deletingId === img.id}

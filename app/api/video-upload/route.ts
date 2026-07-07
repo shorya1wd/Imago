@@ -18,6 +18,10 @@ export async function POST(request: NextRequest) {
 
         const body = await request.json();
         
+        if (!body.publicId || typeof body.publicId !== 'string') {
+            return NextResponse.json({ error: "Missing or invalid publicId" }, { status: 400 });
+        }
+        
         const safeOriginalSize = String(body.originalSize || "0");
 let safeCompressedSize = safeOriginalSize; 
 

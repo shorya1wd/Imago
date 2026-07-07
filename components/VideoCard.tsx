@@ -14,10 +14,9 @@ dayjs.extend(relativeTime)
 
 interface VideoCardProps {
     video: Video;
-    onDownload: (url: string, title: string) => void;
 }
 
-const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
+const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
     const router = useRouter();
 
     const [currentVideo, setCurrentVideo] = useState<Video>(video);

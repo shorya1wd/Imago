@@ -1,69 +1,13 @@
-"use client"
-
-import React, { useState, useEffect, useCallback } from 'react'
-import axios from 'axios'
-import { Video } from '@prisma/client'
+import React from 'react'
+import prisma from "../../../../lib/prisma"
 import VideoCard from "../../../components/VideoCard"
 
-export default function Home() {
-  const [videos, setVideos] = useState<Video[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+export const dynamic = "force-dynamic"; // Ensure fresh data on each render
 
-
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const response = await axios.get('/api/videos')
-        
-        setVideos(response.data)
-      } catch (err) {
-        console.error(err)
-        setError("Failed to fetch videos")
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchVideos()
-  }, [])
-
-  // The Download Handler: Fetches the Cloudinary URL and forces the browser to download it
-  const handleDownload = useCallback((url: string, title: string) => {
-    // We fetch the blob directly so the browser triggers a true download instead of just opening it in a new tab
-    fetch(url)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = objectUrl;
-        
-        // Sanitize the title for the filename
-        const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-        link.setAttribute('download', `${safeTitle}.mp4`);
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(objectUrl);
-      })
-      .catch((err) => console.error("Download failed:", err));
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="alert alert-error max-w-lg mx-auto mt-10">
-        <span>{error}</span>
-      </div>
-    )
-  }
+export default async function Home() {
+  const videos = await prisma.video.findMany({
+    orderBy: { createdAt: "desc" }
+  });
 
   return (
     <div className="container mx-auto p-4 max-w-7xl mt-8">
@@ -82,7 +26,6 @@ export default function Home() {
             <VideoCard 
               key={video.id} 
               video={video} 
-              onDownload={handleDownload} 
             />
           ))}
         </div>

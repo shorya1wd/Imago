@@ -91,7 +91,46 @@ function SocialShare() {
 
   useEffect(() => {
     requestAnimationFrame(() => setIsMounted(true));
+    
+    // Restore state from localStorage if it exists (e.g., after Clerk OAuth redirect)
+    const savedState = localStorage.getItem("imago_studio_state");
+    if (savedState) {
+      try {
+        const state = JSON.parse(savedState);
+        if (state.uploadedImage) setUploadedImage(state.uploadedImage);
+        if (state.selectedFormat) setSelectedFormat(state.selectedFormat);
+        if (state.isEnhanced !== undefined) setIsEnhanced(state.isEnhanced);
+        if (state.isRemoveBg !== undefined) setIsRemoveBg(state.isRemoveBg);
+        if (state.isRestored !== undefined) setIsRestored(state.isRestored);
+        if (state.hasOverlay !== undefined) setHasOverlay(state.hasOverlay);
+        if (state.filter) setFilter(state.filter);
+        if (state.bgColor) setBgColor(state.bgColor);
+        if (state.debouncedBgColor) setDebouncedBgColor(state.debouncedBgColor);
+        if (state.originalFilename) setOriginalFilename(state.originalFilename);
+      } catch (e) {
+        console.error("Failed to restore studio state", e);
+      }
+    }
   }, []);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    if (uploadedImage) {
+      const stateToSave = {
+        uploadedImage,
+        selectedFormat,
+        isEnhanced,
+        isRemoveBg,
+        isRestored,
+        hasOverlay,
+        filter,
+        bgColor,
+        debouncedBgColor,
+        originalFilename
+      };
+      localStorage.setItem("imago_studio_state", JSON.stringify(stateToSave));
+    }
+  }, [uploadedImage, selectedFormat, isEnhanced, isRemoveBg, isRestored, hasOverlay, filter, bgColor, debouncedBgColor, originalFilename]);
 
     useEffect(() => {
   if (!bgColor) return; 
@@ -187,6 +226,7 @@ function SocialShare() {
         });
 
         toast.success("Successfully saved to your studio!");
+        localStorage.removeItem("imago_studio_state");
       
       }
       setIsTransforming(false);

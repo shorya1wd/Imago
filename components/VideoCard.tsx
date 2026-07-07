@@ -32,7 +32,9 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
     const isProcessing = originalSize === compressedSize; 
     const savedPercent = isProcessing ? 0 : ((originalSize - compressedSize) / originalSize) * 100;
 
-    const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto,f_mp4,fl_attachment/${currentVideo.publicId}.mp4`;
+    const cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto,f_mp4/${currentVideo.publicId}.mp4`;
+    const filename = `${currentVideo.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.mp4`;
+    const downloadUrl = `/api/download?url=${encodeURIComponent(cloudinaryUrl)}&filename=${filename}`;
 
     useEffect(() => {
         const checkMobile = () => {

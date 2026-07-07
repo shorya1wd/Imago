@@ -74,7 +74,9 @@ export default function VideoPage() {
   }, [video]); // This tells React to re-evaluate whenever the 'video' state changes
 
   const getFullVideoUrl = useCallback((publicId: string) => {
-    return getCldVideoUrl({ src: publicId, quality: "auto", format: "mp4"})
+    // Build the URL manually to exactly match the eager transformation (q_auto,f_mp4)
+    // This ensures Cloudinary serves the pre-cached version instead of recompressing on first play
+    return `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto,f_mp4/${publicId}.mp4`;
   }, [])
 
   const handleDelete = async () => {
@@ -118,7 +120,7 @@ export default function VideoPage() {
   const isProcessing = originalSize === compressedSize;
   const savedPercent = isProcessing ? 0 : ((originalSize - compressedSize) / originalSize) * 100;
   
-  const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto/fl_attachment/${video.publicId}.mp4`;
+  const downloadUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/q_auto,f_mp4/fl_attachment/${video.publicId}.mp4`;
 
   return (
     <div className="container mx-auto p-4 max-w-6xl mt-8">

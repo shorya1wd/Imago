@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="#12073a"/>
+
+  <!-- Letter I - top bar -->
+  <rect x="9" y="5" width="14" height="3.5" rx="1" fill="white"/>
+  <!-- Letter I - stem -->
+  <rect x="13.5" y="8.5" width="5" height="15" fill="white"/>
+  <!-- Letter I - bottom bar -->
+  <rect x="9" y="23.5" width="14" height="3.5" rx="1" fill="white"/>
+
+  <!-- Golden aperture dot in the center of the stem -->
+  <circle cx="16" cy="16" r="3.2" fill="#F5C842"/>
+  <!-- Aperture blades (dark) -->
+  <line x1="16" y1="12.8" x2="16" y2="19.2" stroke="#12073a" stroke-width="1.1" stroke-linecap="round" transform="rotate(0,16,16)"/>
+  <line x1="16" y1="12.8" x2="16" y2="19.2" stroke="#12073a" stroke-width="1.1" stroke-linecap="round" transform="rotate(60,16,16)"/>
+  <line x1="16" y1="12.8" x2="16" y2="19.2" stroke="#12073a" stroke-width="1.1" stroke-linecap="round" transform="rotate(120,16,16)"/>
+  <!-- Pupil -->
+  <circle cx="16" cy="16" r="1.2" fill="#12073a"/>
+</svg>

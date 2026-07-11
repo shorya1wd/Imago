@@ -2,7 +2,6 @@
 
 import React from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Home, Image as ImageIcon, Video, Menu ,FileVideo} from 'lucide-react'
 import { UserButton, useUser } from '@clerk/nextjs'
@@ -43,9 +42,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </label>
           </div>
           <div className="flex-1">
-            <Link href="/" className="flex items-center gap-2 ml-2 hover:opacity-80 transition-opacity">
-              <Image src="/imago-logo.svg" alt="Imago logo" width={32} height={32} priority />
-              <span className="font-black text-xl tracking-widest text-primary">IMAGO</span>
+            <Link href="/" className="font-black text-xl tracking-widest text-primary ml-2 hover:opacity-80 transition-opacity">
+              IMAGO
             </Link>
           </div>
           
@@ -74,20 +72,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           
           {/* Desktop Logo Header */}
           <div className="p-6 hidden lg:flex justify-between items-center">
-            <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-              <Image
-                src="/imago-logo.svg"
-                alt="Imago logo"
-                width={48}
-                height={48}
-                priority
-                style={{ filter: 'drop-shadow(0 0 8px rgba(245,200,66,0.4))' }}
-              />
-              <div>
-                <h1 className="text-3xl font-black tracking-widest text-primary">IMAGO</h1>
-                <p className="text-xs text-base-content/50 mt-1 uppercase font-semibold tracking-wider">Media Studio</p>
-              </div>
-            </Link>
+            <div>
+              <h1 className="text-3xl font-black tracking-widest text-primary">IMAGO</h1>
+              <p className="text-xs text-base-content/50 mt-1 uppercase font-semibold tracking-wider">Media Studio</p>
+            </div>
             
             {/* ◄ ADD THE TOGGLE HERE FOR DESKTOP ► */}
             <ThemeToggle />

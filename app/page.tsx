@@ -20,32 +20,8 @@ export default function Home() {
           zIndex: 0,
         }}
       >
-        <div
-          style={{
-            position: "absolute",
-            width: 500,
-            height: 500,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(91,47,168,0.25) 0%, transparent 70%)",
-            top: "-120px",
-            left: "-100px",
-            animation: "pulse 8s ease-in-out infinite",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            width: 400,
-            height: 400,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(245,200,66,0.12) 0%, transparent 70%)",
-            bottom: "-80px",
-            right: "-80px",
-            animation: "pulse 10s ease-in-out infinite reverse",
-          }}
-        />
+        <div className="orb orb-purple" />
+        <div className="orb orb-gold" />
       </div>
 
       <main
@@ -53,7 +29,7 @@ export default function Home() {
         style={{ maxWidth: 640 }}
       >
         {/* ── Logo Wordmark ── */}
-        <div style={{ animation: "fadeIn 0.8s ease-out" }}>
+        <div className="fade-in-up">
           <Image
             src="/imago-wordmark.svg"
             alt="Imago Media Studio"
@@ -65,99 +41,101 @@ export default function Home() {
         </div>
 
         {/* ── Tagline ── */}
-        <p
-          style={{
-            color: "#C4B5E0",
-            fontSize: "1.15rem",
-            lineHeight: 1.7,
-            maxWidth: 480,
-            animation: "fadeIn 1s ease-out 0.2s both",
-          }}
-        >
-          Your AI-powered media library. Organize, transform, and share your
-          images &amp; videos with intelligence.
+        <p className="fade-in-up delay-1 imago-tagline">
+          Create, curate, and share your world. A smart media studio for images
+          &amp; videos — powered by AI.
         </p>
 
         {/* ── CTA Buttons ── */}
-        <div
-          style={{
-            display: "flex",
-            gap: 16,
-            flexWrap: "wrap",
-            justifyContent: "center",
-            animation: "fadeIn 1s ease-out 0.4s both",
-          }}
-        >
-          <Link
-            href="/home"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "12px 32px",
-              borderRadius: 999,
-              background: "linear-gradient(135deg, #7C3FCC, #F5C842)",
-              color: "#fff",
-              fontWeight: 700,
-              fontSize: "1rem",
-              letterSpacing: "0.04em",
-              textDecoration: "none",
-              boxShadow: "0 4px 24px rgba(124,63,204,0.45)",
-              transition: "transform 0.2s, box-shadow 0.2s",
-            }}
-            onMouseOver={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.transform =
-                "translateY(-2px)";
-              (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-                "0 8px 32px rgba(124,63,204,0.6)";
-            }}
-            onMouseOut={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.transform = "";
-              (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-                "0 4px 24px rgba(124,63,204,0.45)";
-            }}
-          >
+        <div className="fade-in-up delay-2 imago-cta-row">
+          <Link href="/home" className="btn-primary-imago">
             Enter Studio
           </Link>
-
-          <Link
-            href="/sign-in"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "12px 32px",
-              borderRadius: 999,
-              background: "transparent",
-              border: "1.5px solid rgba(245,200,66,0.45)",
-              color: "#F5C842",
-              fontWeight: 600,
-              fontSize: "1rem",
-              letterSpacing: "0.04em",
-              textDecoration: "none",
-              transition: "background 0.2s, border-color 0.2s",
-            }}
-            onMouseOver={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.background =
-                "rgba(245,200,66,0.08)";
-              (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                "#F5C842";
-            }}
-            onMouseOut={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.background =
-                "transparent";
-              (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                "rgba(245,200,66,0.45)";
-            }}
-          >
+          <Link href="/sign-in" className="btn-outline-imago">
             Sign In
           </Link>
         </div>
       </main>
 
-      {/* ── Keyframe animations injected via style tag ── */}
       <style>{`
-        @keyframes fadeIn {
+        .orb {
+          position: absolute;
+          border-radius: 50%;
+        }
+        .orb-purple {
+          width: 500px; height: 500px;
+          background: radial-gradient(circle, rgba(91,47,168,0.25) 0%, transparent 70%);
+          top: -120px; left: -100px;
+          animation: pulse 8s ease-in-out infinite;
+        }
+        .orb-gold {
+          width: 400px; height: 400px;
+          background: radial-gradient(circle, rgba(245,200,66,0.12) 0%, transparent 70%);
+          bottom: -80px; right: -80px;
+          animation: pulse 10s ease-in-out infinite reverse;
+        }
+        .fade-in-up {
+          animation: fadeInUp 0.8s ease-out both;
+        }
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+
+        .imago-tagline {
+          color: #C4B5E0;
+          font-size: 1.15rem;
+          line-height: 1.7;
+          max-width: 480px;
+        }
+        .imago-cta-row {
+          display: flex;
+          gap: 16px;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        /* Primary CTA */
+        .btn-primary-imago {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 32px;
+          border-radius: 999px;
+          background: linear-gradient(135deg, #7C3FCC, #F5C842);
+          color: #fff;
+          font-weight: 700;
+          font-size: 1rem;
+          letter-spacing: 0.04em;
+          text-decoration: none;
+          box-shadow: 0 4px 24px rgba(124,63,204,0.45);
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary-imago:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 32px rgba(124,63,204,0.6);
+        }
+
+        /* Outline CTA */
+        .btn-outline-imago {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 32px;
+          border-radius: 999px;
+          background: transparent;
+          border: 1.5px solid rgba(245,200,66,0.45);
+          color: #F5C842;
+          font-weight: 600;
+          font-size: 1rem;
+          letter-spacing: 0.04em;
+          text-decoration: none;
+          transition: background 0.2s, border-color 0.2s;
+        }
+        .btn-outline-imago:hover {
+          background: rgba(245,200,66,0.08);
+          border-color: #F5C842;
+        }
+
+        @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: translateY(0); }
         }

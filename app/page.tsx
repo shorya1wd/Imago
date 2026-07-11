@@ -1,65 +1,171 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div
+      className="flex flex-col flex-1 items-center justify-center min-h-screen"
+      style={{
+        background:
+          "radial-gradient(ellipse at 60% 20%, #2A1160 0%, #0D0520 55%, #000 100%)",
+      }}
+    >
+      {/* Animated background orbs */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          overflow: "hidden",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            width: 500,
+            height: 500,
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(91,47,168,0.25) 0%, transparent 70%)",
+            top: "-120px",
+            left: "-100px",
+            animation: "pulse 8s ease-in-out infinite",
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+        <div
+          style={{
+            position: "absolute",
+            width: 400,
+            height: 400,
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(245,200,66,0.12) 0%, transparent 70%)",
+            bottom: "-80px",
+            right: "-80px",
+            animation: "pulse 10s ease-in-out infinite reverse",
+          }}
+        />
+      </div>
+
+      <main
+        className="relative flex flex-col items-center gap-10 text-center px-8 py-24 z-10"
+        style={{ maxWidth: 640 }}
+      >
+        {/* ── Logo Wordmark ── */}
+        <div style={{ animation: "fadeIn 0.8s ease-out" }}>
+          <Image
+            src="/imago-wordmark.svg"
+            alt="Imago Media Studio"
+            width={320}
+            height={80}
+            priority
+            style={{ filter: "drop-shadow(0 0 24px rgba(245,200,66,0.35))" }}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* ── Tagline ── */}
+        <p
+          style={{
+            color: "#C4B5E0",
+            fontSize: "1.15rem",
+            lineHeight: 1.7,
+            maxWidth: 480,
+            animation: "fadeIn 1s ease-out 0.2s both",
+          }}
+        >
+          Your AI-powered media library. Organize, transform, and share your
+          images &amp; videos with intelligence.
+        </p>
+
+        {/* ── CTA Buttons ── */}
+        <div
+          style={{
+            display: "flex",
+            gap: 16,
+            flexWrap: "wrap",
+            justifyContent: "center",
+            animation: "fadeIn 1s ease-out 0.4s both",
+          }}
+        >
+          <Link
+            href="/home"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "12px 32px",
+              borderRadius: 999,
+              background: "linear-gradient(135deg, #7C3FCC, #F5C842)",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: "1rem",
+              letterSpacing: "0.04em",
+              textDecoration: "none",
+              boxShadow: "0 4px 24px rgba(124,63,204,0.45)",
+              transition: "transform 0.2s, box-shadow 0.2s",
+            }}
+            onMouseOver={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.transform =
+                "translateY(-2px)";
+              (e.currentTarget as HTMLAnchorElement).style.boxShadow =
+                "0 8px 32px rgba(124,63,204,0.6)";
+            }}
+            onMouseOut={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.transform = "";
+              (e.currentTarget as HTMLAnchorElement).style.boxShadow =
+                "0 4px 24px rgba(124,63,204,0.45)";
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/8 px-5 transition-colors hover:border-transparent hover:bg-black/4 dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Enter Studio
+          </Link>
+
+          <Link
+            href="/sign-in"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "12px 32px",
+              borderRadius: 999,
+              background: "transparent",
+              border: "1.5px solid rgba(245,200,66,0.45)",
+              color: "#F5C842",
+              fontWeight: 600,
+              fontSize: "1rem",
+              letterSpacing: "0.04em",
+              textDecoration: "none",
+              transition: "background 0.2s, border-color 0.2s",
+            }}
+            onMouseOver={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.background =
+                "rgba(245,200,66,0.08)";
+              (e.currentTarget as HTMLAnchorElement).style.borderColor =
+                "#F5C842";
+            }}
+            onMouseOut={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.background =
+                "transparent";
+              (e.currentTarget as HTMLAnchorElement).style.borderColor =
+                "rgba(245,200,66,0.45)";
+            }}
           >
-            Documentation
-          </a>
+            Sign In
+          </Link>
         </div>
       </main>
+
+      {/* ── Keyframe animations injected via style tag ── */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); opacity: 0.8; }
+          50%       { transform: scale(1.15); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }

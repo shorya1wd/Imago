@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Imago",
-  description: "AI-powered media library",
+  title: "Imago — Media Studio",
+  description: "Create, curate, and share your world. Imago is a smart media studio for images and videos — powered by AI.",
 };
 
 export default function RootLayout({

@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   '/videos(.*)',
   '/social-share(.*)',
   '/image-gallery',
+  '/about',
   '/api/webhooks/cloudinary(.*)'
 ]);
 

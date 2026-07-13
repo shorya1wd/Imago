@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Image as ImageIcon, Video, Menu ,FileVideo} from 'lucide-react'
+import { Home, Image as ImageIcon, Video, Menu, FileVideo, Info } from 'lucide-react'
 import { UserButton, useUser } from '@clerk/nextjs'
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -15,7 +15,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { href: '/home', label: 'Video Gallery', icon: <Home size={20} /> },
     { href: '/social-share', label: 'Imago Studio', icon: <ImageIcon size={20} /> },
-    {href:'/image-gallery', label: 'Image Gallery', icon: <ImageIcon size={20} /> }
+    { href: '/image-gallery', label: 'Image Gallery', icon: <ImageIcon size={20} /> },
+    { href: '/about', label: 'About Imago', icon: <Info size={20} /> }
   ];
 
   // If the user is logged in, add the My Videos and Upload routes to the sidebar

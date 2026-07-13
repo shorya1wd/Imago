@@ -18,9 +18,22 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Imago — Media Studio",
   description: "Create, curate, and share your world. Imago is a smart media studio for images and videos — powered by AI.",
+  applicationName: "Imago Media Studio",
+  openGraph: {
+    title: "Imago — Media Studio",
+    description: "Create, curate, and share your world. Imago is a smart media studio for images and videos — powered by AI.",
+    url: "https://www.imagomediastudio.com",
+    siteName: "Imago Media Studio",
+    locale: "en_US",
+    type: "website",
+  },
   icons: {
-    icon: "/favicon.svg",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" }
+    ],
     shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
 };
 

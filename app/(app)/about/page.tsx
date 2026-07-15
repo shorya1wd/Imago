@@ -66,7 +66,7 @@ export default function AboutPage() {
               <div>
                 <p className="text-primary-content/70 text-sm uppercase tracking-widest font-bold mb-1">Built By</p>
                 <p className="text-xl">Shorya Bhushan</p>
-                <p className="text-sm opacity-90">Full Stack Developer / Engineer</p>
+                <p className="text-sm opacity-90">Full Stack Developer</p>
               </div>
               
               <div>
